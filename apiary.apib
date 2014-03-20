@@ -1,0 +1,190 @@
+FORMAT: 1A
+HOST: https://api.dingday.cc
+
+# dingday API
+
+Api urcene pro pristup ke sluzbam aplikace [dinday.cc](http://www.dingday.cc)
+
+## Intro
+
+Vetsina requestu na zdroje vyzaduje Basic HTTP Authentication, kazdy takovy je oznacen hlavickou "Authentication".
+
+### Autorizace
+
+U kazdeho requestu, ktery vyzaduje autorizaci pouzivejte [Base64](http://en.wikipedia.org/wiki/Base64) zakodovany string ve forme _"username:password"_ 
+
+#### Testovani
+
+Pro ucely testovani a tohoto MOCu pouzivejte jako Autorization string 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='. S kazdym requestem je tedy treba zaslat hlavicku
+
+    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+
+### Podporujeme tyto HTTP metody: 
+
+    GET - ziskani dat zdroje - u seznamu podporuje since, offset, limit, search
+    POST - vytvoreni noveho zaznamu zdroje
+    PUT - update zdroje - vyzaduje ID
+    DELETE - mazani zdroje - vyzaduje ID
+    
+### Monžné odpovědi serveru:
+
+* 200 ```OK``` the request was successful (some API calls may return 201 instead).
+* 201 ```Created``` - the request was successful and a resource was created.
+* 204 ```No Content``` - the request was successful but there is no representation to return (i.e. the response is empty).
+* 400 ```Bad Request``` - the request could not be understood or was missing required parameters.
+* 401 ```Unauthorized``` - authentication failed or user doesn't have permissions for requested operation.
+* 403 ```Forbidden``` - access denied.
+* 404 ```Not Found``` - resource was not found.
+* 405 ```Method Not Allowed``` - requested method is not supported for resource.
+* 500 ```Internal Server Error``` - there were an error while processing your request on server site.
+
+# Group Projects
+
+Projekt umoznuje seskupovat tasky do logickych skupin. 
+
+## Authentication
+Basic HTTP Authentication. 
+
+Zdroj pro zpristupneni projektu prihlaseneho uzivatele
+
+## Projekt [/projects/{id}]
+
+Jeden konkretni projekt. 
+
+### Parametry projektu:
+
++ id (int) : unikátní ID projektu - *generuje server*
++ title (string) : název projektu
++ modified (timestamp) : timestamp ve formátu ISO 8601 formát: `YYYY-MM-DDTHH:MM:SSZ` - *generuje server*
++ rank (int) : pořadí
+
++ Parameters
+    + id (required, int) ... id zaznamu ktery ma byt updatovan
+    
++ Model (application/json)
+
+    JSON reprezentace jednoho Projektu. 
+
+    + Body
+    
+            {
+                "id": 3, 
+                "title": "Projekt 3"
+                "modified": "2013-11-26 11:08:09"
+                "rank": 3
+            }
+
+### Info o projektu [GET]
+
+Umoznuje ziskat detailni informace o jednom projektu
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [Projekt][]
+
+### Editovat projekt [PUT]
+
+Updatuje editovat jeden projekt, editovat lze vsechny parametry projektu, krom *generovanych serverem*
+
+#### Update ranku/pořadí
+Klíč rank označuje změnu pořadí položky v kolekci. Rank může nabívat hodnot:
+
++ 0 - rank je nezměněn
++ - (int) např. -5 - rank položky bude změněn o 5 nahoru, všechny položky, které editovaný záznam přeskočil, budou přečíslovany
++ + (int) např. +3 - rank položky bude změněn o 3 dolů, všechny položky, které editovaný záznam přeskočili, budou přečíslovány
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "title": "Upraveny titulek"
+                "rank": 0
+            }
+
++ Response 200
+    
+    [Projekt][]
+
+### Vytvořit nový projekt [POST]
+
+Vytvori novy projekt pro prihlaseneho uzivatele
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            { 
+                "title": "Projekt 3" 
+            }
+
++ Response 201 (application/json)
+
+    [Projekt][]
+
+### Smazat projekt [DELETE]
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 204
+
+## Kolekce Projektu [/projects{?since,search,limit,offset}]
+
+Kolekce projektu prihlaseneho uzivatele
+
++ Model (application/json)
+
+    JSON reprezentace jednoho Projektu. 
+    
+       + Body
+
+            [{
+                "id": 1, 
+                "title": "Projekt 1"
+                "modified": "2013-05-27 11:08:09"
+                "rank": 1
+            }, {
+                "id": 2, 
+                "title": "Projekt 2"
+                "modified": "2013-05-27 11:08:09"
+                "rank": 2
+            }, {
+                "id": 3, 
+                "title": "Projekt 3"
+                "modified": "2013-03-27 11:08:09"
+                "rank": 3
+            }]
+            
+### Vypis vsechny projekty [GET] 
+
++ Parameters
+    + since (optional, string, `2013-01-01 12:00:00`) ... Timestamp v ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ` Vraci jen projekty zmenen po datu since.
+    + limit (optional, int, `10`) ... omezeni poctu zaznamu
+    + offset (optional, int, `30`) ... ofset ve vyhledavani
+    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani
+ 
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200 (application/json)
+
+    [Kolekce Projektu][]   
