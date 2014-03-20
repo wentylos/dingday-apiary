@@ -92,12 +92,12 @@ Umoznuje ziskat detailni informace o jednom projektu
 
 Updatuje editovat jeden projekt, editovat lze vsechny parametry projektu, krom *generovanych serverem*
 
-#### Update ranku/pořadí
+#### Update ranku/pořadí
 Klíč rank označuje změnu pořadí položky v kolekci. Rank může nabívat hodnot:
 
 + 0 - rank je nezměněn
 + - (int) např. -5 - rank položky bude změněn o 5 nahoru, všechny položky, které editovaný záznam přeskočil, budou přečíslovany
-+ + (int) např. +3 - rank položky bude změněn o 3 dolů, všechny položky, které editovaný záznam přeskočili, budou přečíslovány
++ + (int) např. +3 - rank položky bude změněn o 3 dolů, všechny položky, které editovaný záznam přeskočili, budou přečíslovány
 
 + Request
     + Headers
@@ -188,3 +188,4 @@ Kolekce projektu prihlaseneho uzivatele
 + Response 200 (application/json)
 
     [Kolekce Projektu][]   
+    
