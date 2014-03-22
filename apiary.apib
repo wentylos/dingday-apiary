@@ -9,7 +9,7 @@ Api urcene pro pristup ke sluzbam aplikace [dinday.cc](http://www.dingday.cc)
 
 Vetsina requestu na zdroje vyzaduje Basic HTTP Authentication, kazdy takovy je oznacen hlavickou "Authentication".
 
-### Autorizace
+### <a name="autorizace"></a> Autorizace
 
 U kazdeho requestu, ktery vyzaduje autorizaci pouzivejte [Base64](http://en.wikipedia.org/wiki/Base64) zakodovany string ve forme _"username:password"_ 
 
@@ -39,14 +39,43 @@ Pro ucely testovani a tohoto MOCu pouzivejte jako Autorization string 'QWxhZGRpb
 * 405 ```Method Not Allowed``` - requested method is not supported for resource.
 * 500 ```Internal Server Error``` - there were an error while processing your request on server site.
 
+### <a name="UUID"></a> Generovani ID UUID
+
+TODO
+
+### <a name="timestamp"></a> Timestamp, urceni casu
+
+TODO
+
+### <a name="rank"></a> Rank, poradi entit
+
+Klíč rank označuje změnu pořadí položky v kolekci. Rank může nabívat hodnot:
+
++ 0 - rank je nezměněn
++ - (int) např. -5 - rank položky bude změněn o 5 nahoru, všechny položky, které editovaný záznam přeskočil, budou přečíslovany
++ + (int) např. +3 - rank položky bude změněn o 3 dolů, všechny položky, které editovaný záznam přeskočili, budou přečíslovány
+
+TODO
+
+### <a name="since"></a> Since, rozdilove prirustky
+
+TODO
+
+# Group Tasks
+
+Zdroj pro zpristupneni ukolu prihlaseneho uzivatele. Úkol je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
+
+## Autorizace
+Basic HTTP Authentication. Pro vice informaci vizk kapitola [Autorizace](#autorizace)
+
+Zdroj pro zpristupneni projektu prihlaseneho uzivatele.
+
 # Group Projects
 
-Projekt umoznuje seskupovat tasky do logickych skupin. 
+Zdroj pro zpristupneni projektu prihlaseneho uzivatele. Projekt umoznuje seskupovat tasky do logickych skupin. 
 
-## Authentication
-Basic HTTP Authentication. 
-
-Zdroj pro zpristupneni projektu prihlaseneho uzivatele
+## Autorizace
+Basic HTTP Authentication. Pro vice informaci vizk kapitola [Autorizace](#autorizace)
 
 ## Projekt [/projects/{id}]
 
@@ -54,10 +83,10 @@ Jeden konkretni projekt.
 
 ### Parametry projektu:
 
-+ id (int) : unikátní ID projektu - *generuje server*
++ id (int) : unikátní UUID projektu - [vice o UUID](#uuid)
 + title (string) : název projektu
-+ modified (timestamp) : timestamp ve formátu ISO 8601 formát: `YYYY-MM-DDTHH:MM:SSZ` - *generuje server*
-+ rank (int) : pořadí
++ modified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ rank (int) : pořadí [vice o poradi](#rank)
 
 + Parameters
     + id (required, int) ... id zaznamu ktery ma byt updatovan
@@ -91,13 +120,6 @@ Umoznuje ziskat detailni informace o jednom projektu
 ### Editovat projekt [PUT]
 
 Updatuje editovat jeden projekt, editovat lze vsechny parametry projektu, krom *generovanych serverem*
-
-#### Update ranku/pořadí
-Klíč rank označuje změnu pořadí položky v kolekci. Rank může nabívat hodnot:
-
-+ 0 - rank je nezměněn
-+ - (int) např. -5 - rank položky bude změněn o 5 nahoru, všechny položky, které editovaný záznam přeskočil, budou přečíslovany
-+ + (int) např. +3 - rank položky bude změněn o 3 dolů, všechny položky, které editovaný záznam přeskočili, budou přečíslovány
 
 + Request
     + Headers
@@ -175,10 +197,10 @@ Kolekce projektu prihlaseneho uzivatele
 ### Vypis vsechny projekty [GET] 
 
 + Parameters
-    + since (optional, string, `2013-01-01 12:00:00`) ... Timestamp v ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ` Vraci jen projekty zmenen po datu since.
+    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
     + limit (optional, int, `10`) ... omezeni poctu zaznamu
     + offset (optional, int, `30`) ... ofset ve vyhledavani
-    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani
+    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u projektu hleda v *title*
  
 + Request
     + Headers
