@@ -61,21 +61,54 @@ TODO
 
 TODO
 
+# Group Users
+
+Zdroj pro zpristupneni informaci o uzivateli, prihlaseni, registraci, edirtaci profilu.
+
+## Autorizace
+TODO - jen nekde
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+
 # Group Tasks
 
 Zdroj pro zpristupneni ukolu prihlaseneho uzivatele. Úkol je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
 
 ## Autorizace
-Basic HTTP Authentication. Pro vice informaci vizk kapitola [Autorizace](#autorizace)
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-Zdroj pro zpristupneni projektu prihlaseneho uzivatele.
+# Group Assets
+TODO - bude to pod url pod task i project nebo to bude zvlast routa pro ukoly a projekty jako subtask?
+
+Zdroj pro zpristupneni asetu jednoho ukolu nebo projektu prihlaseneho uzivatele. Asset je blok dat různého typy přičleněný buď k úkolu nebo projektu. 
+
+## Autorizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+
+# Group Tags
+
+Zdroj pro zpristupneni tagu prihlaseneho uzivatele. Tag je listecek, popisek prirazeny k tasku pres asset typu *AssetTag*
+
+## Autorizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+
+# Group Terms
+
+Zdroj pro zpristupneni kalendare prihlaseneho uzivatele. Kalendar se sklada z terminu. Termin je spojen s ukolem skrze asset typu:
+
++ asset “scheduled for” a tedy s kategorií “scheduled”.
++ asset “deadline” pro tento den
++ asset “repeat”, který zahrnuje tento den.je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
+
+## Autorizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+
 
 # Group Projects
 
 Zdroj pro zpristupneni projektu prihlaseneho uzivatele. Projekt umoznuje seskupovat tasky do logickych skupin. 
 
 ## Autorizace
-Basic HTTP Authentication. Pro vice informaci vizk kapitola [Autorizace](#autorizace)
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
 ## Projekt [/projects/{id}]
 
