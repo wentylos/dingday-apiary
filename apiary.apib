@@ -70,40 +70,76 @@ Zdroj pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci pr
 TODO - jen nekde
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-# Group Tasks
+#group Assets
 
-Zdroj pro zpristupneni ukolu prihlaseneho uzivatele. Úkol je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
+<a name="assets"></a>
+Asset je blok dat různého typy přičleněný buď k úkolu nebo projektu.
 
 ## Autorizace
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-## Task [/tasks/{id}{?assets}]
+Zdroj pro zpristupneni ukolu prihlaseneho uzivatele.
 
-Jeden konkretni task. 
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace).
 
-### <a name="task-categories"></a> Kategorie ukolu
+## Zavislost na tasku/projektu
 
-Parametru category kazdeho tasku nese stringovou identifikaci kategorie. Kategorii je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
+Asset sam o sobe neexistuje, je zavisly na tasku nebo projektu kteremu je prirazen. 
+Proto jsou vsechny manipulace s assetem prefixovany [/tasks/{taskID}/assets](#task-assets) pripadne [/projects/{projectID}/assets](#project-assets)
+
+## <a name="asset-types"></a> Typy assetu
+
+Parametru *type* kazdeho assetu nese stringovou identifikaci typu assetu. Assetum podle typu je treba na urovni klientu pridat sematnitku. Podporujeme tyto typy assetu:
 
 + A
 + B
 + C
 + D
 
-### Parametry ukolu:
+## Parametry asset:
+
++ id (int) : unikátní UUID ukolu - [vice o UUID](#uuid)
++ type (string) : enum - vyctovy typ, jeden z typu ukolu - [vice o typech assetu](#asset-types)
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
++ rank (int) : pořadí [vice o poradi](#rank)
+
+# Group Tasks
+
+Úkol je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
+
+## Autorizace
+
+Zdroj pro zpristupneni ukolu prihlaseneho uzivatele. 
+
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace).
+
+## <a name="task-categories"></a> Kategorie ukolu
+
+Parametru *category* kazdeho tasku nese stringovou identifikaci kategorie. Kategoriim je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
+
++ A
++ B
++ C
++ D
+
+## Parametry ukolu:
 
 + id (int) : unikátní UUID ukolu - [vice o UUID](#uuid)
 + title (string) : název ukolu
 + category (string) : enum - vyctovy typ, jedna z kategorii ukolu - [vice o kategoriich ukolu](#task-categories)
-+ assets (list) : kolekce assetu projektu - [vice o assetech](#assets)
++ assets (list) : kolekce assetu projektu - [vice o assetech](#task-assets-list)
 + isDone (boolean) : je ukol hotovy?
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 + rank (int) : pořadí [vice o poradi](#rank)
 
+## Task [/tasks/{id}{?assets}]
+
+Jeden konkretni task a manipulace s nim. 
+
 + Parameters
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
-    + assets (optional, boolean) ... zda nacist vsechny assety ukolu
+    + assets (optional, boolean) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
     
 + Model (application/json)
 
@@ -135,29 +171,13 @@ Umoznuje ziskat detailni informace o jednom ukolu
     
     [Task][]
 
+## Task Asset [/tasks/{taskId}/assets/{id}]
 
-## Asset [/tasks/{id}/assets/{id}]
-<a name="assets"></a>
-Zdroj pro zpristupneni konkretniho assetu jednoho ukolu nebo projektu prihlaseneho uzivatele. Asset je blok dat různého typy přičleněný buď k úkolu nebo projektu. 
-
-### <a name="asset-types"></a> Typy assetu
-
-Parametru type kazdeho assetu nese stringovou identifikaci typu assetu. Assetu podle typu je treba na urovni klientu pridat sematnitku. Podporujeme tyto typy assetu:
-
-+ A
-+ B
-+ C
-+ D
-
-### Parametry asset:
-
-+ id (int) : unikátní UUID ukolu - [vice o UUID](#uuid)
-+ type (string) : enum - vyctovy typ, jeden z typu ukolu - [vice o typech assetu](#asset-types)
-+ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
-+ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
-+ rank (int) : pořadí [vice o poradi](#rank)
+<a name="task-assets"></a>
+Jeden konkretni asset daneho ukolu a manipulace s nim.
 
 + Parameters
+    + taskId (required, string) ... UUID tasku kteremu asset patri
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
 
 + Model (application/json)
@@ -177,7 +197,7 @@ Parametru type kazdeho assetu nese stringovou identifikaci typu assetu. Assetu p
                 "rank": 1
             }
 
-### Info o ukolu [GET]
+### Info o assetu [GET]
 
 Umoznuje ziskat detailni informace o jednom assetu
 
@@ -188,7 +208,58 @@ Umoznuje ziskat detailni informace o jednom assetu
 
 + Response 200
     
-    [Asset][]
+    [Task Asset][]
+
+## Task assets list [/tasks/{taskId}/assets/{?since,search,limit,offset}]
+
+<a name="task-assets-list"></a>
+Kolekce assetu daneho tasku. [Vice o assetech](assets)
+    
++ Model (application/json)
+
+    JSON reprezentace jednoho Assetu. 
+
+    + Body
+    
+            [{
+                    "id": 6, 
+                    "title": "TODO"
+                    "lastModified": "2013-11-26 11:08:09"
+                    "created": "2013-11-26 11:08:09"
+                    "rank": 1
+            }, {
+                    "id": 7, 
+                    "title": "TODO"
+                    "lastModified": "2013-11-26 11:08:09"
+                    "created": "2013-11-26 11:08:09"
+                    "rank": 1
+            }, {
+                    "id": 8, 
+                    "title": "TODO"
+                    "lastModified": "2013-11-26 11:08:09"
+                    "created": "2013-11-26 11:08:09"
+                    "rank": 1
+                }
+            }
+
+### Vypis vsechny assetu [GET] 
+
++ Parameters
+    + taskId (required, string) ... UUID ukolu jehoz assety maji byt ziskany
+    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
+    + limit (optional, int, `10`) ... omezeni poctu zaznamu
+    + offset (optional, int, `30`) ... ofset ve vyhledavani
+    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u projektu hleda v *title*
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [Task assets list][]
+
 
 # Group Tags
 
@@ -216,11 +287,7 @@ Zdroj pro zpristupneni projektu prihlaseneho uzivatele. Projekt umoznuje seskupo
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-## Project [/projects/{id}]
-
-Jeden konkretni projekt. 
-
-### Parametry projektu:
+## Parametry projektu:
 
 + id (string) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + title (string) : název projektu
@@ -230,6 +297,10 @@ Jeden konkretni projekt.
 
 + Parameters
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+
+## Project [/projects/{id}]
+
+Jeden konkretni projekt a manipulace s nim. 
     
 + Model (application/json)
 
@@ -310,7 +381,7 @@ Vytvori novy projekt pro prihlaseneho uzivatele
 
 ## Projects list [/projects{?since,search,limit,offset}]
 
-Kolekce projektu prihlaseneho uzivatele
+Kolekce projektu
 
 + Model (application/json)
 
