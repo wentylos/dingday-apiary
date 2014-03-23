@@ -1,7 +1,7 @@
 FORMAT: 1A
 HOST: https://api.dingday.cc
 
-# dingday API
+# DingDay API
 
 Api urcene pro pristup ke sluzbam aplikace [dinday.cc](http://www.dingday.cc)
 
@@ -11,7 +11,8 @@ Vetsina requestu na zdroje vyzaduje Basic HTTP Authentication, kazdy takovy je o
 
 ### <a name="autorizace"></a> Autorizace
 
-U kazdeho requestu, ktery vyzaduje autorizaci pouzivejte [Base64](http://en.wikipedia.org/wiki/Base64) zakodovany string ve forme _"username:password"_ 
+U kazdeho requestu, ktery vyzaduje autorizaci pouzivejte [Base64](http://en.wikipedia.org/wiki/Base64) zakodovany string ve forme _"username:password"_. 
+Neni tedy nutne se nijak hlasit, nepracujeme s autorizacnimi tokeny. Kazdy request se autorizuje zvlast.
 
 #### Testovani
 
@@ -63,7 +64,7 @@ TODO
 
 # Group Users
 
-Zdroj pro zpristupneni informaci o uzivateli, prihlaseni, registraci, edirtaci profilu.
+Zdroj pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci profilu.
 
 ## Autorizace
 TODO - jen nekde
@@ -76,13 +77,118 @@ Zdroj pro zpristupneni ukolu prihlaseneho uzivatele. Úkol je připomínka činn
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-# Group Assets
-TODO - bude to pod url pod task i project nebo to bude zvlast routa pro ukoly a projekty jako subtask?
+## Task [/tasks/{id}{?assets}]
 
-Zdroj pro zpristupneni asetu jednoho ukolu nebo projektu prihlaseneho uzivatele. Asset je blok dat různého typy přičleněný buď k úkolu nebo projektu. 
+Jeden konkretni task. 
 
-## Autorizace
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+### <a name="task-categories"></a> Kategorie ukolu
+
+Parametru category kazdeho tasku nese stringovou identifikaci kategorie. Kategorii je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
+
++ A
++ B
++ C
++ D
+
+### Parametry ukolu:
+
++ id (int) : unikátní UUID ukolu - [vice o UUID](#uuid)
++ title (string) : název ukolu
++ category (string) : enum - vyctovy typ, jedna z kategorii ukolu - [vice o kategoriich ukolu](#task-categories)
++ assets (list) : kolekce assetu projektu - [vice o assetech](#assets)
++ isDone (boolean) : je ukol hotovy?
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
++ rank (int) : pořadí [vice o poradi](#rank)
+
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+    + assets (optional, boolean) ... zda nacist vsechny assety ukolu
+    
++ Model (application/json)
+
+    JSON reprezentace jednoho Ukolu. 
+
+    + Body
+    
+            {
+                "id": 6, 
+                "title": "Mesicni nakup"
+                "category": "calendar"
+                "assets": null
+                "isDone": false
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 1
+            }
+
+### Info o ukolu [GET]
+
+Umoznuje ziskat detailni informace o jednom ukolu
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [Task][]
+
+
+## Asset [/tasks/{id}/assets/{id}]
+<a name="assets"></a>
+Zdroj pro zpristupneni konkretniho assetu jednoho ukolu nebo projektu prihlaseneho uzivatele. Asset je blok dat různého typy přičleněný buď k úkolu nebo projektu. 
+
+### <a name="asset-types"></a> Typy assetu
+
+Parametru type kazdeho assetu nese stringovou identifikaci typu assetu. Assetu podle typu je treba na urovni klientu pridat sematnitku. Podporujeme tyto typy assetu:
+
++ A
++ B
++ C
++ D
+
+### Parametry asset:
+
++ id (int) : unikátní UUID ukolu - [vice o UUID](#uuid)
++ type (string) : enum - vyctovy typ, jeden z typu ukolu - [vice o typech assetu](#asset-types)
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
++ rank (int) : pořadí [vice o poradi](#rank)
+
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+
++ Model (application/json)
+
+    JSON reprezentace jednoho Assetu. 
+
+    + Body
+    
+            {
+                "id": 6, 
+                "title": "Mesicni nakup"
+                "category": "calendar"
+                "assets": null
+                "isDone": false
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 1
+            }
+
+### Info o ukolu [GET]
+
+Umoznuje ziskat detailni informace o jednom assetu
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [Asset][]
 
 # Group Tags
 
@@ -110,19 +216,20 @@ Zdroj pro zpristupneni projektu prihlaseneho uzivatele. Projekt umoznuje seskupo
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-## Projekt [/projects/{id}]
+## Project [/projects/{id}]
 
 Jeden konkretni projekt. 
 
 ### Parametry projektu:
 
-+ id (int) : unikátní UUID projektu - [vice o UUID](#uuid)
++ id (string) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + title (string) : název projektu
-+ modified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 + rank (int) : pořadí [vice o poradi](#rank)
 
 + Parameters
-    + id (required, int) ... id zaznamu ktery ma byt updatovan
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
     
 + Model (application/json)
 
@@ -133,7 +240,8 @@ Jeden konkretni projekt.
             {
                 "id": 3, 
                 "title": "Projekt 3"
-                "modified": "2013-11-26 11:08:09"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
                 "rank": 3
             }
 
@@ -148,7 +256,7 @@ Umoznuje ziskat detailni informace o jednom projektu
 
 + Response 200
     
-    [Projekt][]
+    [Project][]
 
 ### Editovat projekt [PUT]
 
@@ -169,7 +277,7 @@ Updatuje editovat jeden projekt, editovat lze vsechny parametry projektu, krom *
 
 + Response 200
     
-    [Projekt][]
+    [Project][]
 
 ### Vytvořit nový projekt [POST]
 
@@ -189,7 +297,7 @@ Vytvori novy projekt pro prihlaseneho uzivatele
 
 + Response 201 (application/json)
 
-    [Projekt][]
+    [Project][]
 
 ### Smazat projekt [DELETE]
 
@@ -200,7 +308,7 @@ Vytvori novy projekt pro prihlaseneho uzivatele
 
 + Response 204
 
-## Kolekce Projektu [/projects{?since,search,limit,offset}]
+## Projects list [/projects{?since,search,limit,offset}]
 
 Kolekce projektu prihlaseneho uzivatele
 
@@ -213,17 +321,20 @@ Kolekce projektu prihlaseneho uzivatele
             [{
                 "id": 1, 
                 "title": "Projekt 1"
-                "modified": "2013-05-27 11:08:09"
+                "lastModified": "2013-05-27 11:08:09"
+                "created": "2013-03-10 11:08:09"
                 "rank": 1
             }, {
                 "id": 2, 
                 "title": "Projekt 2"
-                "modified": "2013-05-27 11:08:09"
+                "lastModified": "2013-05-27 11:08:09"
+                "created": "2013-03-15 11:08:09"
                 "rank": 2
             }, {
                 "id": 3, 
                 "title": "Projekt 3"
-                "modified": "2013-03-27 11:08:09"
+                "lastModified": "2013-03-27 11:08:09"
+                "created": "2013-03-20 11:08:09"
                 "rank": 3
             }]
             
@@ -242,5 +353,5 @@ Kolekce projektu prihlaseneho uzivatele
 
 + Response 200 (application/json)
 
-    [Kolekce Projektu][]   
+    [Projects list][]   
     
