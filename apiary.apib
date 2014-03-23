@@ -84,24 +84,104 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 ## Zavislost na tasku/projektu
 
 Asset sam o sobe neexistuje, je zavisly na tasku nebo projektu kteremu je prirazen. 
-Proto jsou vsechny manipulace s assetem prefixovany [/tasks/{taskID}/assets](#task-assets) pripadne [/projects/{projectID}/assets](#project-assets)
+Proto jsou vsechny manipulace s assetem prefixovany [/tasks/{taskID}/assets](#task-assets) pripadne [/projects/{projectID}/assets](#project-assets) 
+a definice prislusnych zdroju najdete u tasku a projektu.
 
 ## <a name="asset-types"></a> Typy assetu
 
 Parametru *type* kazdeho assetu nese stringovou identifikaci typu assetu. Assetum podle typu je treba na urovni klientu pridat sematnitku. Podporujeme tyto typy assetu:
 
-+ A
-+ B
-+ C
-+ D
++ [NOTE](#asset-type-note)
++ [REMINDER](#asset-type-reminder) 
++ [SCHEDULED_FOR](#asset-type-scheduled-for)
++ [DEADLINE](#asset-type-deadline)
++ [TODO](#asset-type-todo)
++ [ADDRESS](#asset-type-address)
++ [TAG](#asset-type-tag)
++ [PROJECT](#asset-type-project)
 
 ## Parametry asset:
+
+Parametry uvedene zde nize maji vsechny assety.
 
 + id (int) : unikátní UUID ukolu - [vice o UUID](#uuid)
 + type (string) : enum - vyctovy typ, jeden z typu ukolu - [vice o typech assetu](#asset-types)
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 + rank (int) : pořadí [vice o poradi](#rank)
+
+Konkretni assety maji specificke parametry, viz seznam u konkretniho assetu. 
+Dle typu assetu klientska aplikace vi, jake parametry jsou pro dany asset dostupne.
+
+###  Asset NOTE
+<a name="asset-type-note"></a>
+Textové políčko, které mohou upravovat všichni uživatelé, kterým je úkol sdílen.
+
+#### Parametry 
++ title (string) : nazev poznamky
++ body (string) : telo poznamky
+
+### Asset REMINDER
+<a name="asset-type-reminder"></a>
+Datum [čas], kdy se má úkol připomenout.
+
+#### Parametry 
++ date (timestamp) : datum pripomenuti [vice o formatu timestamp](#timestamp)
+
+### Asset SCHEDULED_FOR
+<a name="asset-type-scheduled-for"></a>
+ Den [čas] na kdy je úkol naplánován.
+
+#### Parametry 
++ date (timestamp) : datum naplanovani [vice o formatu timestamp](#timestamp)
+
+### Asset DEADLINE
+<a name="asset-type-deadline"></a>
+Datum [čas] do kdy musí být úkol dokončen. 
+
+#### Parametry 
++ date (timestamp) : datum dokonceni [vice o formatu timestamp](#timestamp)
+
+### Asset TODO
+<a name="asset-type-todo"></a>
+Seznam položek, které musí být provedeny. 
+
+#### Parametry 
++ title (string) : nazev seznamu
++ items (list) : [polozky](#asset-type-todo-items)
+
+#### Parametry jedne polozky
+<a name="asset-type-todo-items"></a>
+
++ id (int) : unikátní UUID zaznamu - [vice o UUID](#uuid)
++ title (string) : název ukolu
++ isDone (boolean) : je ukol hotovy?
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
++ rank (int) : pořadí [vice o poradi](#rank)
+
+### Asset ADDRESS
+<a name="asset-type-address"></a>
+ Adresa místa. 
+
+#### Parametry 
++ title (string) : adresa, libovolny retezec
++ gps (string) : gps souradnice dohledane pro dany nazev
+
+### Asset TAG
+<a name="asset-type-tag"></a>
+Seznam tagů přidělených k úkolu. [Vice o tagech](#tags).
+
+#### Parametry 
++ items (list) : prirazene tagy, formatu 
+[viz parametry tagu](#tags)
+
+### Asset PROJECT
+<a name="asset-type-project"></a>
+Projekt, ke kterému úkol náleží. [Vice o projektech](#projects).
+
+#### Parametry 
+[Viz parametry projektu](#projects)
 
 # Group Tasks
 
@@ -117,14 +197,16 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 
 Parametru *category* kazdeho tasku nese stringovou identifikaci kategorie. Kategoriim je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
 
-+ A
-+ B
-+ C
-+ D
++ INBOX
++ NEXT
++ SCHEDULED
++ WAITING_FOR
++ SUSPENDED
++ COMPLETED
 
 ## Parametry ukolu:
 
-+ id (int) : unikátní UUID ukolu - [vice o UUID](#uuid)
++ id (int) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + title (string) : název ukolu
 + category (string) : enum - vyctovy typ, jedna z kategorii ukolu - [vice o kategoriich ukolu](#task-categories)
 + assets (list) : kolekce assetu projektu - [vice o assetech](#task-assets-list)
@@ -263,6 +345,7 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
 
 # Group Tags
 
+<a name="tags"></a>
 Zdroj pro zpristupneni tagu prihlaseneho uzivatele. Tag je listecek, popisek prirazeny k tasku pres asset typu *AssetTag*
 
 ## Autorizace
@@ -281,7 +364,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 
 
 # Group Projects
-
+<a name="projects"></a>
 Zdroj pro zpristupneni projektu prihlaseneho uzivatele. Projekt umoznuje seskupovat tasky do logickych skupin. 
 
 ## Autorizace
