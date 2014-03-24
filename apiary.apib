@@ -62,6 +62,17 @@ TODO
 
 TODO
 
+### <a name="colors"></a> Barvy
+
+V mistech kde se vyskutuje parametr *color* je dostupna pouze stringova konstanta, ktera reprezentuje lidsky citelnou hodnotu barvy, jedna z hodnot nize. Kde konkretni prirazeni barvy probiha na urovni klientske aplikace. V seznamu nize jsou v zavorce uvedny doporucene HEXa kody barve. 
+
+* BLACK - (#000000)
+* GREEN - (#00FF00)
+* LIGHT_GREEN - (#78AB46)
+* RED - (#FF0000)
+
+TODO
+
 # Group Users
 
 Zdroj pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci profilu.
@@ -184,7 +195,7 @@ Projekt, ke kterému úkol náleží. [Vice o projektech](#projects).
 [Viz parametry projektu](#projects)
 
 # Group Tasks
-
+<a name="tasks"></a>
 Úkol je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
 
 ## Autorizace
@@ -215,13 +226,13 @@ Parametru *category* kazdeho tasku nese stringovou identifikaci kategorie. Kateg
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 + rank (int) : pořadí [vice o poradi](#rank)
 
-## Task [/tasks/{id}{?assets}]
+## Task [/tasks/{id}{?withAssets}]
 
 Jeden konkretni task a manipulace s nim. 
 
 + Parameters
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
-    + assets (optional, boolean) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
+    + withAssets = `true` (optional, boolean) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
     
 + Model (application/json)
 
@@ -299,7 +310,7 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
     
 + Model (application/json)
 
-    JSON reprezentace jednoho Assetu. 
+    JSON reprezentace kolekce Assetu. 
 
     + Body
     
@@ -351,17 +362,252 @@ Zdroj pro zpristupneni tagu prihlaseneho uzivatele. Tag je listecek, popisek pri
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
+## Parametry tagu:
+
++ id (string) : unikátní UUID zaznamu - [vice o UUID](#uuid)
++ title (string) : název projektu
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
++ rank (int) : pořadí [vice o poradi](#rank)
++ color (string) : barva [vice o barvach](#colors)
+
+## Tag [/tags/{id}]
+
+Jeden konkretni tag a manipulace s nim. 
+    
++ Model (application/json)
+
+    JSON reprezentace jednoho Tagu. 
+
+    + Body
+    
+            {
+                "id": 3 
+                "title": "Babicka a Deda"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 3
+                "color: BLACK
+            }
+
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+    
+### Info o tagu [GET]
+
+Umoznuje ziskat detailni informace o jednom tagu
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [Tag][]
+
+### Editovat tagu [PUT]
+
+Updatuje editovat jeden tagu, editovat lze vsechny parametry tagu, krom *generovanych serverem*
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "title": "Upraveny nazev tagu"
+                "rank": 0
+            }
+
++ Response 200
+    
+    [Tag][]
+
+### Vytvořit nový tag [POST]
+
+Vytvori novy tag pro prihlaseneho uzivatele
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            { 
+                "title": "Babicka a Deda" 
+            }
+
++ Response 201 (application/json)
+
+    [Tag][]
+
+### Smazat tag [DELETE]
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 204
+
+## Tags list [/tags{?since,search,limit,offset}]
+
+Kolekce tagu
+
++ Model (application/json)
+
+    JSON reprezentace kolekce Tagu. 
+    
+       + Body
+
+            [{
+                "id": 1 
+                "title": "Babicka a Deda"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 1
+                "color: BLACK
+            }, {
+                "id": 2 
+                "title": "Manzelka"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 2
+                "color: RED
+            }, {
+                "id": 3 
+                "title": "Milenka"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 3
+                "color: LIGHT_GREEN
+            }]
+            
+### Vypis vsechny tagy [GET] 
+
++ Parameters
+    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
+    + limit (optional, int, `10`) ... omezeni poctu zaznamu
+    + offset (optional, int, `30`) ... ofset ve vyhledavani
+    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u tagu hleda v *title*
+ 
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200 (application/json)
+
+    [Tags list][]   
+
 # Group Terms
+<a name="terms"></a>
+Zdroj pro zpristupneni kalendare prihlaseneho uzivatele. 
 
-Zdroj pro zpristupneni kalendare prihlaseneho uzivatele. Kalendar se sklada z terminu. Termin je spojen s ukolem skrze asset typu:
+Kalendar se sklada z terminu. Termin je spojen s ukolem skrze asset typu:
 
-+ asset “scheduled for” a tedy s kategorií “scheduled”.
-+ asset “deadline” pro tento den
-+ asset “repeat”, který zahrnuje tento den.je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
++ asset __scheduled for__ a tedy s kategorií “scheduled”.
++ asset __deadline__ pro tento den
++ asset __repeat__, který zahrnuje tento den.je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
+
+__Zdroj je pouze ke cteni. Zapis zpusobuje prirazeni jednoho z assetu danemu ukolu.__
 
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
+## Parametry termu:
+
++ id (string) : unikátní UUID zaznamu - [vice o UUID](#uuid)
++ date (timestamp) : planovany datum cas [vice o formatu timestamp](#timestamp) 
++ task (task) : kompletni task [vice o tasku](#tasks)
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
++ rank (int) : pořadí [vice o poradi](#rank) zde poradi ukolu v ramci dne
+
+## Terms list [/terms{?since,limit,offset,date,withAssets}]
+
+Kolekce termu
+
++ Model (application/json)
+
+    JSON reprezentace jednoho Termu. 
+    
+       + Body
+
+            [{
+                "id": 1 
+                "date": "10-10-2014 08:00:00"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 1
+                "task": {
+                    "id": 6, 
+                    "title": "Zavolat Pepovi"
+                    "category": "calendar"
+                    "assets": null
+                    "isDone": true
+                    "lastModified": "2013-11-26 11:08:09"
+                    "created": "2013-11-26 11:08:09"
+                    "rank": 1
+                }
+            }, {
+                "id": 2 
+                "date": "10-10-2014 10:10:00"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 2
+                "task": {
+                    "id": 7, 
+                    "title": "Mesicni nakup"
+                    "category": "calendar"
+                    "assets": null
+                    "isDone": false
+                    "lastModified": "2013-11-26 11:08:09"
+                    "created": "2013-11-26 11:08:09"
+                    "rank": 2
+                }
+            }, {
+                "id": 3 
+                "date": "10-11-2014 08:00:00"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "rank": 1
+                "task": {
+                    "id": 7, 
+                    "title": "Prohlidka bytu"
+                    "category": "calendar"
+                    "assets": null
+                    "isDone": false
+                    "lastModified": "2013-11-26 11:08:09"
+                    "created": "2013-11-26 11:08:09"
+                    "rank": 1
+                }
+            }, 
+            ]
+            
+### Vypis vsechny termy [GET] 
+
++ Parameters
+    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since), vzajemne vylucne s date.
+    + limit (optional, int, `10`) ... omezeni poctu zaznamu
+    + offset (optional, int, `30`) ... ofset ve vyhledavani
+    + date (optional, date, `2013-01-01`)  ... date, vraci jen zaznamy pro dany den, vzajemne vylucne se since.
+    + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200 (application/json)
+
+    [Terms list][]   
 
 # Group Projects
 <a name="projects"></a>
@@ -378,8 +624,6 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 + rank (int) : pořadí [vice o poradi](#rank)
 
-+ Parameters
-    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
 
 ## Project [/projects/{id}]
 
@@ -392,13 +636,16 @@ Jeden konkretni projekt a manipulace s nim.
     + Body
     
             {
-                "id": 3, 
+                "id": 3 
                 "title": "Projekt 3"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
                 "rank": 3
             }
 
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+    
 ### Info o projektu [GET]
 
 Umoznuje ziskat detailni informace o jednom projektu
@@ -473,19 +720,19 @@ Kolekce projektu
        + Body
 
             [{
-                "id": 1, 
+                "id": 1 
                 "title": "Projekt 1"
                 "lastModified": "2013-05-27 11:08:09"
                 "created": "2013-03-10 11:08:09"
                 "rank": 1
             }, {
-                "id": 2, 
+                "id": 2 
                 "title": "Projekt 2"
                 "lastModified": "2013-05-27 11:08:09"
                 "created": "2013-03-15 11:08:09"
                 "rank": 2
             }, {
-                "id": 3, 
+                "id": 3 
                 "title": "Projekt 3"
                 "lastModified": "2013-03-27 11:08:09"
                 "created": "2013-03-20 11:08:09"
