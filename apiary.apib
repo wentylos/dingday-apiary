@@ -48,16 +48,6 @@ TODO
 
 TODO
 
-### <a name="rank"></a> Rank, poradi entit
-
-Klíč rank označuje změnu pořadí položky v kolekci. Rank může nabívat hodnot:
-
-+ 0 - rank je nezměněn
-+ - (int) např. -5 - rank položky bude změněn o 5 nahoru, všechny položky, které editovaný záznam přeskočil, budou přečíslovany
-+ + (int) např. +3 - rank položky bude změněn o 3 dolů, všechny položky, které editovaný záznam přeskočili, budou přečíslovány
-
-TODO
-
 ### <a name="since"></a> Since, rozdilove prirustky
 
 TODO
@@ -117,7 +107,6 @@ Parametry uvedene zde nize maji vsechny assety.
 + type (string) : enum - vyctovy typ, jeden z typu ukolu - [vice o typech assetu](#asset-types)
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
-+ rank (int) : pořadí [vice o poradi](#rank)
 
 Konkretni assety maji specificke parametry, viz seznam u konkretniho assetu. 
 Dle typu assetu klientska aplikace vi, jake parametry jsou pro dany asset dostupne.
@@ -167,7 +156,6 @@ Seznam položek, které musí být provedeny.
 + isDone (boolean) : je ukol hotovy?
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
-+ rank (int) : pořadí [vice o poradi](#rank)
 
 ### Asset ADDRESS
 <a name="asset-type-address"></a>
@@ -204,7 +192,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 
 ## <a name="task-categories"></a> Kategorie ukolu
 
-Parametru *category* kazdeho tasku nese stringovou identifikaci kategorie. Kategoriim je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
+Parametru *category* kazdeho tasku nese stringovou identifikaci kategorii. Kategoriim je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
 
 + INBOX
 + NEXT
@@ -217,12 +205,11 @@ Parametru *category* kazdeho tasku nese stringovou identifikaci kategorie. Kateg
 
 + id (int) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + title (string) : název ukolu
-+ category (string) : enum - vyctovy typ, jedna z kategorii ukolu - [vice o kategoriich ukolu](#task-categories)
++ categories (list) : kolekce vyctoveho typu, kategorii ve kterych je ukol zarazen - [vice o kategoriich ukolu](#task-categories)
 + assets (list) : kolekce assetu projektu - [vice o assetech](#task-assets-list)
 + isDone (boolean) : je ukol hotovy?
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
-+ rank (int) : pořadí [vice o poradi](#rank)
 
 ## Task [/tasks/{id}{?withAssets}]
 
@@ -241,12 +228,11 @@ Jeden konkretni task a manipulace s nim.
             {
                 "id": 6, 
                 "title": "Mesicni nakup"
-                "category": "calendar"
+                "categories": ["SCHEDULED"]
                 "assets": null
                 "isDone": false
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 1
             }
 
 ### Info o ukolu [GET]
@@ -282,7 +268,6 @@ Jeden konkretni asset daneho ukolu a manipulace s nim.
                 "type": "NOTE"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 1
                 "title": "Kino"
                 "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
             }
@@ -316,7 +301,6 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
                 "type": "NOTE"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 1
                 "title": "Kino"
                 "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
             }, {
@@ -324,28 +308,24 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
                 "type": "REMINDER"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 2
                 "date": "10-10-2014 08:00:00"
             }, {
                 "id": 3 
                 "type": "SCHEDULED_FOR"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 3
                 "date": "10-12-2014 20:00:00"
             }, {
                 "id": 3 
                 "type": "DEADLINE"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 3
                 "date": "10-11-2014 20:00:00"
             }, {
                 "id": 4 
                 "type": "TODO"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 4
                 "title": "Co musim udelet?"
                 "items": [{
                     "id": 1 
@@ -353,35 +333,30 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
                     "isDone": "true"
                     "lastModified": "2013-11-26 11:08:09"
                     "created": "2013-11-26 11:08:09"
-                    "rank": 1
                 }, {
                     "id": 2 
                     "title": "Najit kino"
                     "isDone": "false"
                     "lastModified": "2013-11-26 11:08:09"
                     "created": "2013-11-26 11:08:09"
-                    "rank": 2
                 }, {
                     "id": 3 
                     "title": "Zjistit zda ma Zuzka cas"
                     "isDone": "false"
                     "lastModified": "2013-11-26 11:08:09"
                     "created": "2013-11-26 11:08:09"
-                    "rank": 3
                 }, {
                     "id": 4 
                     "title": "Rezervovat listky"
                     "isDone": "false"
                     "lastModified": "2013-11-26 11:08:09"
                     "created": "2013-11-26 11:08:09"
-                    "rank": 4
                 }]
             }, {
                 "id": 5
                 "type": "ADDRESS"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 5
                 "title": "Velky spalicek Brno"
                 "gps": "49.1931944°, 016.6059722°"
             }, {
@@ -389,20 +364,17 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
                 "type": "TAG"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 6
                 "items": [{
                     "id": 1 
                     "title": "Babicka a Deda"
                     "lastModified": "2013-11-26 11:08:09"
                     "created": "2013-11-26 11:08:09"
-                    "rank": 1
                     "color": "BLACK"
                 }, {
                     "id": 2 
                     "title": "Manzelka"
                     "lastModified": "2013-11-26 11:08:09"
                     "created": "2013-11-26 11:08:09"
-                    "rank": 2
                     "color": "RED"
                 }]
             }, {
@@ -410,16 +382,13 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
                 "type": "PROJECT"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 7
                 "project": {
                     "id": 1 
                     "title": "Projekt 1"
                     "lastModified": "2013-05-27 11:08:09"
                     "created": "2013-03-10 11:08:09"
-                    "rank": 1
                 }
-            }, 
-            ]
+            }]
 
 ### Vypis vsechny assetu [GET] 
 
@@ -454,7 +423,6 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + title (string) : název projektu
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
-+ rank (int) : pořadí [vice o poradi](#rank)
 + color (string) : barva [vice o barvach](#colors)
 
 ## Tag [/tags/{id}]
@@ -472,7 +440,6 @@ Jeden konkretni tag a manipulace s nim.
                 "title": "Babicka a Deda"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 3
                 "color: "BLACK"
             }
 
@@ -506,7 +473,6 @@ Updatuje editovat jeden tagu, editovat lze vsechny parametry tagu, krom *generov
     
             {
                 "title": "Upraveny nazev tagu"
-                "rank": 0
             }
 
 + Response 200
@@ -557,21 +523,18 @@ Kolekce tagu
                 "title": "Babicka a Deda"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 1
                 "color: "BLACK"
             }, {
                 "id": 2 
                 "title": "Manzelka"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 2
                 "color: "RED"
             }, {
                 "id": 3 
                 "title": "Milenka"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 3
                 "color: "LIGHT_GREEN"
             }]
             
@@ -611,12 +574,11 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 
 + id (string) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + date (timestamp) : planovany datum cas [vice o formatu timestamp](#timestamp) 
-+ task (task) : kompletni task [vice o tasku](#tasks)
++ tasks (array) : pole UUID tasku nebo pole kompletnich task - v zavislosti na __fullTasks__ [vice o tasku](#tasks)
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
-+ rank (int) : pořadí [vice o poradi](#rank) zde poradi ukolu v ramci dne
 
-## Terms list [/terms{?since,limit,offset,date,withAssets}]
+## Terms list [/terms/{date}/{?since,fullTasks,withAssets}]
 
 Kolekce termu
 
@@ -628,63 +590,91 @@ Kolekce termu
 
             [{
                 "id": 1 
-                "date": "10-10-2014 08:00:00"
+                "date": "10-10-2014"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 1
-                "task": {
-                    "id": 6, 
-                    "title": "Zavolat Pepovi"
-                    "category": "calendar"
-                    "assets": null
-                    "isDone": true
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
-                    "rank": 1
-                }
+                "tasks": [1, 2, 3, 4, 5]
             }, {
                 "id": 2 
-                "date": "10-10-2014 10:10:00"
+                "date": "10-11-2014"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 2
-                "task": {
-                    "id": 7, 
-                    "title": "Mesicni nakup"
-                    "category": "calendar"
-                    "assets": null
-                    "isDone": false
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
-                    "rank": 2
-                }
+                "tasks": [6, 8]
             }, {
                 "id": 3 
-                "date": "10-11-2014 08:00:00"
+                "date": "10-12-2014"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 1
-                "task": {
-                    "id": 7, 
-                    "title": "Prohlidka bytu"
-                    "category": "calendar"
-                    "assets": null
+                "tasks": [7]
+            }, {
+                "id": 4 
+                "date": "10-13-2014"
+                "lastModified": "2013-11-26 11:08:09"
+                "created": "2013-11-26 11:08:09"
+                "tasks": [{
+                    "id": 6, 
+                    "title": "Mesicni nakup"
+                    "categories": ["CALENDAR", "INBOX"]
+                    "assets": [{
+                        "id": 1 
+                        "type": "NOTE"
+                        "lastModified": "2013-11-26 11:08:09"
+                        "created": "2013-11-26 11:08:09"
+                        "title": "Kino"
+                        "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
+                    }, {
+                        "id": 3 
+                        "type": "SCHEDULED_FOR"
+                        "lastModified": "2013-11-26 11:08:09"
+                        "created": "2013-11-26 11:08:09"
+                        "date": "10-13-2014"
+                    }]
                     "isDone": false
                     "lastModified": "2013-11-26 11:08:09"
                     "created": "2013-11-26 11:08:09"
-                    "rank": 1
-                }
-            }, 
-            ]
+                }, {
+                    "id": 7, 
+                    "title": "Mesicni nakup"
+                    "categories": ["CALENDAR"]
+                    "assets": [{
+                        "id": 10 
+                        "type": "SCHEDULED_FOR"
+                        "lastModified": "2013-11-26 11:08:09"
+                        "created": "2013-11-26 11:08:09"
+                        "date": "10-13-2014"
+                    }, {
+                        "id": 6 
+                        "type": "TAG"
+                        "lastModified": "2013-11-26 11:08:09"
+                        "created": "2013-11-26 11:08:09"
+                        "items": [{
+                            "id": 1 
+                            "title": "Babicka a Deda"
+                            "lastModified": "2013-11-26 11:08:09"
+                            "created": "2013-11-26 11:08:09"
+                            "color": "BLACK"
+                        }, {
+                            "id": 2 
+                            "title": "Manzelka"
+                            "lastModified": "2013-11-26 11:08:09"
+                            "created": "2013-11-26 11:08:09"
+                            "color": "RED"
+                        }]
+                    }]
+                    "isDone": false
+                    "lastModified": "2013-11-26 11:08:09"
+                    "created": "2013-11-26 11:08:09"
+                }]
+            }] 
             
-### Vypis vsechny termy [GET] 
+            
+### Ziskani ukolu pro dany termin [GET] 
 
 + Parameters
-    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since), vzajemne vylucne s date.
-    + limit (optional, int, `10`) ... omezeni poctu zaznamu
-    + offset (optional, int, `30`) ... ofset ve vyhledavani
-    + date (optional, date, `2013-01-01`)  ... date, vraci jen zaznamy pro dany den, vzajemne vylucne se since.
-    + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
+    + date (required, date, `2013-01-01`)  ... date, urcuje zaznamy pro dany den
+    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since).
+    + fullTasks = `false` (optional, boolean, `false`) ... zda expandovat vsechny tasky. Pokud je true, bude parametr *tasks* obshovat expandovanou kolekci tasku. [Vice o tasku](#task)
+    + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametr *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
 
 + Request
     + Headers
@@ -708,7 +698,6 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + title (string) : název projektu
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
-+ rank (int) : pořadí [vice o poradi](#rank)
 
 
 ## Project [/projects/{id}]
@@ -726,7 +715,6 @@ Jeden konkretni projekt a manipulace s nim.
                 "title": "Projekt 3"
                 "lastModified": "2013-11-26 11:08:09"
                 "created": "2013-11-26 11:08:09"
-                "rank": 3
             }
 
 + Parameters
@@ -759,7 +747,6 @@ Updatuje editovat jeden projekt, editovat lze vsechny parametry projektu, krom *
     
             {
                 "title": "Upraveny titulek"
-                "rank": 0
             }
 
 + Response 200
@@ -810,19 +797,16 @@ Kolekce projektu
                 "title": "Projekt 1"
                 "lastModified": "2013-05-27 11:08:09"
                 "created": "2013-03-10 11:08:09"
-                "rank": 1
             }, {
                 "id": 2 
                 "title": "Projekt 2"
                 "lastModified": "2013-05-27 11:08:09"
                 "created": "2013-03-15 11:08:09"
-                "rank": 2
             }, {
                 "id": 3 
                 "title": "Projekt 3"
                 "lastModified": "2013-03-27 11:08:09"
                 "created": "2013-03-20 11:08:09"
-                "rank": 3
             }]
             
 ### Vypis vsechny projekty [GET] 
