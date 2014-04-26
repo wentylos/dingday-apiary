@@ -52,10 +52,11 @@ Timestamp v jinych casovych zonach bude pred ulozenim na serveru vzdy preveden d
 
 Timestamp s chybejici casovou zonou bude pred ulozenim na serveru doplnen do UTC.
 
-Ukazky (obe jsou ekvivalentni)
+Ukazky (vse jsou ekvivalentni)
  
-* __2014-04-25T23:41:14+00:00__ 
-* __2014-04-25T23:41:14__
+* __2014-04-25T23:41:14Z__ 
+* __2014-04-25T23:41:14+00:00__
+* __2014-04-25T23:41:14__ - TODO - bacha toto dle ISO neni ekvivalentni dvema predchozim -> je to lokalni cas bez urceni cas. zony.
 
 
 ### <a name="date"></a> Date - urceni data
@@ -268,8 +269,8 @@ Jeden konkretni task a manipulace s nim.
                 "categories": ["SCHEDULED"]
                 "assets": null
                 "isDone": false
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
             }
 
 ### Info o ukolu [GET]
@@ -303,8 +304,8 @@ Jeden konkretni asset daneho ukolu a manipulace s nim.
             {
                 "id": 1 
                 "type": "NOTE"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "title": "Kino"
                 "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
             }
@@ -336,94 +337,94 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
             [{
                 "id": 1 
                 "type": "NOTE"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "title": "Kino"
                 "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
             }, {
                 "id": 2 
                 "type": "REMINDER"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
-                "date": "10-10-2014 08:00:00"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+                "date": "2014-10-10T08:00:00Z"
             }, {
                 "id": 3 
                 "type": "SCHEDULED_FOR"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
-                "date": "10-12-2014 20:00:00"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+                "date": "2014-10-10T08:00:00Z"
             }, {
                 "id": 3 
                 "type": "DEADLINE"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
-                "date": "10-11-2014 20:00:00"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+                "date": "2014-10-10T20:00:00Z"
             }, {
                 "id": 4 
                 "type": "TODO"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "title": "Co musim udelet?"
                 "items": [{
                     "id": 1 
                     "title": "Zjistit o cem je film"
                     "isDone": "true"
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
                 }, {
                     "id": 2 
                     "title": "Najit kino"
                     "isDone": "false"
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
                 }, {
                     "id": 3 
                     "title": "Zjistit zda ma Zuzka cas"
                     "isDone": "false"
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
                 }, {
                     "id": 4 
                     "title": "Rezervovat listky"
                     "isDone": "false"
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
                 }]
             }, {
                 "id": 5
                 "type": "ADDRESS"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "title": "Velky spalicek Brno"
                 "gps": "49.1931944°, 016.6059722°"
             }, {
                 "id": 6 
                 "type": "TAG"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "items": [{
                     "id": 1 
                     "title": "Babicka a Deda"
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
                     "color": "BLACK"
                 }, {
                     "id": 2 
                     "title": "Manzelka"
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
                     "color": "RED"
                 }]
             }, {
                 "id": 7 
                 "type": "PROJECT"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "project": {
                     "id": 1 
                     "title": "Projekt 1"
-                    "lastModified": "2013-05-27 11:08:09"
-                    "created": "2013-03-10 11:08:09"
+                    "lastModified": "2014-05-27T11:08:09Z"
+                    "created": "2014-03-10T11:08:09Z"
                 }
             }]
 
@@ -431,7 +432,7 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
 
 + Parameters
     + taskId (required, string) ... UUID ukolu jehoz assety maji byt ziskany
-    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
+    + since (optional, string, `2014-01-01T12:00:00Z`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
     + limit (optional, int, `10`) ... omezeni poctu zaznamu
     + offset (optional, int, `30`) ... ofset ve vyhledavani
     + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u tohoto zdroje hleda v *title*. [Vice o formatu vyhledavani](#search)
@@ -475,8 +476,8 @@ Jeden konkretni tag a manipulace s nim.
             {
                 "id": 3 
                 "title": "Babicka a Deda"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "color: "BLACK"
             }
 
@@ -558,27 +559,27 @@ Kolekce tagu
             [{
                 "id": 1 
                 "title": "Babicka a Deda"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "color: "BLACK"
             }, {
                 "id": 2 
                 "title": "Manzelka"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "color: "RED"
             }, {
                 "id": 3 
                 "title": "Milenka"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "color: "LIGHT_GREEN"
             }]
             
 ### Vypis vsechny tagy [GET] 
 
 + Parameters
-    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
+    + since (optional, string, `2014-01-01T12:00:00Z`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
     + limit (optional, int, `10`) ... omezeni poctu zaznamu
     + offset (optional, int, `30`) ... ofset ve vyhledavani
     + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u tagu hleda v *title*, [Vice o formatu vyhledavani](#search)
@@ -625,19 +626,19 @@ Kolekce termu
        + Body
 
             [{
-                "date": "10-10-2014"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "date": "2014-10-10"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "tasks": [1, 2, 3, 4, 5]
             }, {
-                "date": "10-12-2014"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "date": "2014-10-12"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "tasks": [7]
             }, {
-                "date": "10-13-2014"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "date": "2014-10-13"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
                 "tasks": [{
                     "id": 6, 
                     "title": "Mesicni nakup"
@@ -645,20 +646,20 @@ Kolekce termu
                     "assets": [{
                         "id": 1 
                         "type": "NOTE"
-                        "lastModified": "2013-11-26 11:08:09"
-                        "created": "2013-11-26 11:08:09"
+                        "lastModified": "2014-11-26T11:08:09Z"
+                        "created": "2014-11-26T11:08:09Z"
                         "title": "Kino"
                         "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
                     }, {
                         "id": 3 
                         "type": "SCHEDULED_FOR"
-                        "lastModified": "2013-11-26 11:08:09"
-                        "created": "2013-11-26 11:08:09"
-                        "date": "10-13-2014"
+                        "lastModified": "2014-11-26T11:08:09Z"
+                        "created": "2014-11-26T11:08:09Z"
+                        "date": "2014-10-13"
                     }]
                     "isDone": false
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
                 }, {
                     "id": 8, 
                     "title": "Mesicni nakup"
@@ -666,31 +667,31 @@ Kolekce termu
                     "assets": [{
                         "id": 10 
                         "type": "SCHEDULED_FOR"
-                        "lastModified": "2013-11-26 11:08:09"
-                        "created": "2013-11-26 11:08:09"
-                        "date": "10-13-2014"
+                        "lastModified": "2014-11-26T11:08:09Z"
+                        "created": "2014-11-26T11:08:09Z
+                        "date": "2014-10-13"
                     }, {
                         "id": 6 
                         "type": "TAG"
-                        "lastModified": "2013-11-26 11:08:09"
-                        "created": "2013-11-26 11:08:09"
+                        "lastModified": "2014-11-26T11:08:09Z"
+                        "created": "2014-11-26T11:08:09Z"
                         "items": [{
                             "id": 1 
                             "title": "Babicka a Deda"
-                            "lastModified": "2013-11-26 11:08:09"
-                            "created": "2013-11-26 11:08:09"
+                            "lastModified": "2014-11-26T11:08:09Z"
+                            "created": "2014-11-26T11:08:09Z"
                             "color": "BLACK"
                         }, {
                             "id": 2 
                             "title": "Manzelka"
-                            "lastModified": "2013-11-26 11:08:09"
-                            "created": "2013-11-26 11:08:09"
+                            "lastModified": "2014-11-26T11:08:09Z"
+                            "created": "2014-11-26T11:08:09Z"
                             "color": "RED"
                         }]
                     }]
                     "isDone": false
-                    "lastModified": "2013-11-26 11:08:09"
-                    "created": "2013-11-26 11:08:09"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
                 }]
             }] 
             
@@ -698,8 +699,8 @@ Kolekce termu
 ### Ziskani ukolu pro dany den [GET] 
 
 + Parameters
-    + date (optional, date, `2013-01-01`)  ... date, urcuje zaznamy pro dany den, [vice o formatu date](#date) 
-    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since).
+    + date (optional, date, `2014-01-01`)  ... date, urcuje zaznamy pro dany den, [vice o formatu date](#date) 
+    + since (optional, string, `2014-01-01T12:00:00Z`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since).
     + fullTasks = `false` (optional, boolean, `false`) ... zda expandovat vsechny tasky. Pokud je true, bude parametr *tasks* obshovat expandovanou kolekci tasku. [Vice o tasku](#task)
     + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametr *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
 
@@ -727,7 +728,7 @@ Poradi ukolu na serveru zmergnuje, vznik-li konflikt a vraci Terms list pro dany
 Strategie mergovani: __posledni vyhrava__.
 
 + Parameters
-    + date (required, date, `2013-01-01`)  ... date, urcuje zaznamy pro dany den,  [vice o formatu date](#date)
+    + date (required, date, `2014-01-01`)  ... date, urcuje zaznamy pro dany den,  [vice o formatu date](#date)
 
 + Request
     + Headers
@@ -738,7 +739,7 @@ Strategie mergovani: __posledni vyhrava__.
     + Body
     
             {
-                "date": "10-10-2014"
+                "date": "2014-10-10"
                 "tasks": [1, 2, 3, 4, 5]
             }
 
@@ -774,8 +775,8 @@ Jeden konkretni projekt a manipulace s nim.
             {
                 "id": 3 
                 "title": "Projekt 3"
-                "lastModified": "2013-11-26 11:08:09"
-                "created": "2013-11-26 11:08:09"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
             }
 
 + Parameters
@@ -856,24 +857,24 @@ Kolekce projektu
             [{
                 "id": 1 
                 "title": "Projekt 1"
-                "lastModified": "2013-05-27 11:08:09"
-                "created": "2013-03-10 11:08:09"
+                "lastModified": "2014-05-27T11:08:09Z"
+                "created": "2014-03-10T11:08:09Z"
             }, {
                 "id": 2 
                 "title": "Projekt 2"
-                "lastModified": "2013-05-27 11:08:09"
-                "created": "2013-03-15 11:08:09"
+                "lastModified": "2014-05-27T11:08:09Z"
+                "created": "2014-03-15T11:08:09Z"
             }, {
                 "id": 3 
                 "title": "Projekt 3"
-                "lastModified": "2013-03-27 11:08:09"
-                "created": "2013-03-20 11:08:09"
+                "lastModified": "2014-03-27T11:08:09Z"
+                "created": "2014-03-20T11:08:09Z"
             }]
             
 ### Vypis vsechny projekty [GET] 
 
 + Parameters
-    + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
+    + since (optional, string, `2014-01-01T12:00:00Z`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
     + limit (optional, int, `10`) ... omezeni poctu zaznamu
     + offset (optional, int, `30`) ... ofset ve vyhledavani
     + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u projektu hleda v *title*, [Vice o formatu vyhledavani](#search)
