@@ -754,16 +754,16 @@ Strategie mergovani: __posledni vyhrava__.
 <a name="categories"></a>
 Zdroje pro zpristupneni ukolu s poradim v dane kategorii, aktualizaci poradi a zarazeni/odebrani ukolu z/do kategorie pro prihlaseneho uzivatele.
 
-Kategorie jsou vyctovy typ - [vice o kategoriich ukolu](#task-categories). Pro kazdou z kategorii existuje vlastni zdroj, viz parametru *{category}*.
+__UPOZORNENI__:
+
+neplest [vyctovy typ category](#task-categories) s entitou category a zdrojem /categories. 
+
+Pro kazdou z [hodnot vyctoveho typu category](#task-categories) existuje vlastni zdroj, viz parametr *{category}*.
 
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
 ## Parametry entity category:
-
-__UPOZORNENI__:
-
-neplest [vyctovy typ category](#task-categories) s entitou category. 
 
 + title (string) : nazev kategorie [vice o kategoriich ukolu](#task-categories) 
 + tasks (array) : pole UUID tasku nebo pole kompletnich task - v zavislosti na parametru __fullTasks__ [vice o tasku](#tasks)
@@ -772,11 +772,8 @@ neplest [vyctovy typ category](#task-categories) s entitou category.
 
 ## Categories list [/categories/{category}/{?since,fullTasks,withAssets}]
 
-Kolekce kategorii.
+Kolekce entit kategorii.
 
-__UPOZORNENI__:
-
-neplest [vyctovy typ category](#task-categories) s entitou category. 
 
 + Model (application/json)
 
@@ -874,13 +871,9 @@ neplest [vyctovy typ category](#task-categories) s entitou category.
 
 ## Categories rank [/categories/{category}]
 
-Kolekce kategorii.
+Kolekce entit kategorii.
 
 Zdroj urceny pro zmenu poradi/pridani/odebrani ukolu pro/z/do dane kategorie. 
-
-__UPOZORNENI__:
-
-neplest [vyctovy typ category](#task-categories) s entitou category. 
 
     
 ### Zmena poradi/pridani/odebrani ukolu pro/z/do dane kategorie.  [PUT] 
