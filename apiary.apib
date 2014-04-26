@@ -99,22 +99,22 @@ V mistech kde se vyskutuje parametr *color* je dostupna pouze stringova konstant
 * LIGHT_GREEN - (#78AB46)
 * RED - (#FF0000)
 
-# Group Users
-
-Zdroj pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci profilu.
+# Group Uzivatel
+<a name="users"></a>
+Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci profilu.
 
 ## Autorizace
 TODO - jen nekde
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-#group Assets
+# Group Assety
 
 <a name="assets"></a>
 Asset je blok dat různého typy přičleněný buď k úkolu nebo projektu.
 
-## Autorizace
+Zdroje pro zpristupneni assetu prihlaseneho uzivatele.
 
-Zdroj pro zpristupneni ukolu prihlaseneho uzivatele.
+## Autorizace
 
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace).
 
@@ -137,7 +137,7 @@ Parametru *type* kazdeho assetu nese stringovou identifikaci typu assetu. Assetu
 + [TAG](#asset-type-tag)
 + [PROJECT](#asset-type-project)
 
-## Parametry asset:
+## Parametry entity asset:
 
 Parametry uvedene zde nize maji vsechny assety.
 
@@ -222,9 +222,9 @@ Projekt, ke kterému úkol náleží. [Vice o projektech](#projects).
 <a name="tasks"></a>
 Úkol je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
 
-## Autorizace
-
 Zdroj pro zpristupneni ukolu prihlaseneho uzivatele. 
+
+## Autorizace
 
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace).
 
@@ -239,7 +239,7 @@ Vyctovy typ. Parametr *categories* kazdeho tasku nese kolekci tohoto vyctoveho t
 + SUSPENDED
 + COMPLETED
 
-## Parametry ukolu:
+## Parametry entity task:
 
 + id (int) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + title (string) : název ukolu
@@ -447,15 +447,17 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
     [Task assets list][]
 
 
-# Group Tags
+# Group Tagy
 
 <a name="tags"></a>
-Zdroj pro zpristupneni tagu prihlaseneho uzivatele. Tag je listecek, popisek prirazeny k tasku pres asset typu *AssetTag*
+Tag je listecek, popisek prirazeny k tasku pres asset typu *AssetTag*
+
+Zdroje pro zpristupneni tagu prihlaseneho uzivatele. 
 
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-## Parametry tagu:
+## Parametry entity tag:
 
 + id (string) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + title (string) : název projektu
@@ -593,9 +595,9 @@ Kolekce tagu
 
     [Tags list][]   
 
-# Group Terms
+# Group Termin
 <a name="terms"></a>
-Zdroj pro zpristupneni kalendare prihlaseneho uzivatele. 
+Zdroje pro zpristupneni kalendare prihlaseneho uzivatele. 
 
 Kalendar se sklada ze dnu. Den/termin je spojen s ukolem skrze asset typu:
 
@@ -603,12 +605,12 @@ Kalendar se sklada ze dnu. Den/termin je spojen s ukolem skrze asset typu:
 + asset __deadline__ pro tento den
 + asset __repeat__, který zahrnuje tento den.je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
 
-__Pridani ukolu do kalendare zpusobuje pridani jednoho z assetu vyse k danemu ukolu.__
+__Pridani ukolu do kalendare zpusobuje pridani jednoho z assetu vyse, k danemu ukolu. Akce POST neni podporovana. PUT slouzi pouze k update poradi.__
 
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-## Parametry termu:
+## Parametry entity term:
 
 + date (timestamp) : planovane datum [vice o formatu date](#date) 
 + tasks (array) : pole UUID tasku nebo pole kompletnich task - v zavislosti na parametru __fullTasks__ [vice o tasku](#tasks)
@@ -723,7 +725,7 @@ Zdroj urceny pro zmenu poradi ukolu pro dany den.
 
 Ocekava pole UUID ukolu v danem poradi. 
 
-Poradi ukolu na serveru zmergnuje, vznik-li konflikt a vraci Terms list pro dany den. 
+Poradi ukolu na serveru zmergnuje, vznik-li konflikt. Server vraci seznam termu pro dany den. 
 
 Strategie mergovani: __posledni vyhrava__.
 
@@ -746,15 +748,189 @@ Strategie mergovani: __posledni vyhrava__.
 + Response 200 (application/json)
 
     [Terms list][]   
+    
+    
+# Group Kategorie
+<a name="categories"></a>
+Zdroje pro zpristupneni ukolu s poradim v dane kategorii, aktualizaci poradi a zarazeni/odebrani ukolu z/do kategorie pro prihlaseneho uzivatele.
 
-# Group Projects
-<a name="projects"></a>
-Zdroj pro zpristupneni projektu prihlaseneho uzivatele. Projekt umoznuje seskupovat tasky do logickych skupin. 
+Kategorie jsou vyctovy typ - [vice o kategoriich ukolu](#task-categories). Pro kazdou z kategorii existuje vlastni zdroj, viz parametru *{category}*.
 
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
-## Parametry projektu:
+## Parametry entity category:
+
+__UPOZORNENI__:
+
+neplest [vyctovy typ category](#task-categories) s entitou category. 
+
++ title (string) : nazev kategorie [vice o kategoriich ukolu](#task-categories) 
++ tasks (array) : pole UUID tasku nebo pole kompletnich task - v zavislosti na parametru __fullTasks__ [vice o tasku](#tasks)
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
+
+## Categories list [/categories/{category}/{?since,fullTasks,withAssets}]
+
+Kolekce kategorii.
+
+__UPOZORNENI__:
+
+neplest [vyctovy typ category](#task-categories) s entitou category. 
+
++ Model (application/json)
+
+    JSON reprezentace jednoho Termu. 
+    
+       + Body
+
+            [{
+                "title": "INBOX"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+                "tasks": [1, 2, 3, 4, 5]
+            }, {
+                "title": "INBOX"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+                "tasks": [7]
+            }, {
+                "title": "INBOX"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+                "tasks": [{
+                    "id": 6, 
+                    "title": "Mesicni nakup"
+                    "categories": ["CALENDAR", "INBOX"]
+                    "assets": [{
+                        "id": 1 
+                        "type": "NOTE"
+                        "lastModified": "2014-11-26T11:08:09Z"
+                        "created": "2014-11-26T11:08:09Z"
+                        "title": "Kino"
+                        "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
+                    }, {
+                        "id": 3 
+                        "type": "SCHEDULED_FOR"
+                        "lastModified": "2014-11-26T11:08:09Z"
+                        "created": "2014-11-26T11:08:09Z"
+                        "date": "2014-10-13"
+                    }]
+                    "isDone": false
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
+                }, {
+                    "id": 8, 
+                    "title": "Mesicni nakup"
+                    "categories": ["CALENDAR"]
+                    "assets": [{
+                        "id": 10 
+                        "type": "SCHEDULED_FOR"
+                        "lastModified": "2014-11-26T11:08:09Z"
+                        "created": "2014-11-26T11:08:09Z
+                        "date": "2014-10-13"
+                    }, {
+                        "id": 6 
+                        "type": "TAG"
+                        "lastModified": "2014-11-26T11:08:09Z"
+                        "created": "2014-11-26T11:08:09Z"
+                        "items": [{
+                            "id": 1 
+                            "title": "Babicka a Deda"
+                            "lastModified": "2014-11-26T11:08:09Z"
+                            "created": "2014-11-26T11:08:09Z"
+                            "color": "BLACK"
+                        }, {
+                            "id": 2 
+                            "title": "Manzelka"
+                            "lastModified": "2014-11-26T11:08:09Z"
+                            "created": "2014-11-26T11:08:09Z"
+                            "color": "RED"
+                        }]
+                    }]
+                    "isDone": false
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
+                }]
+            }] 
+            
+            
+### Ziskani ukolu pro kategorii INBOX [GET] 
+
++ Parameters
+    + category (required, string `INBOX`) ... kategorie jedna z hodnot vyctoveho typu kategorii [vice o kategoriich ukolu](#task-categories) 
+    + since (optional, string, `2014-01-01T12:00:00Z`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since).
+    + fullTasks = `false` (optional, boolean, `false`) ... zda expandovat vsechny tasky. Pokud je true, bude parametr *tasks* obshovat expandovanou kolekci tasku. [Vice o tasku](#task)
+    + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametr *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200 (application/json)
+
+    [Categories list][]   
+
+## Categories rank [/categories/{category}]
+
+Kolekce kategorii.
+
+Zdroj urceny pro zmenu poradi/pridani/odebrani ukolu pro/z/do dane kategorie. 
+
+__UPOZORNENI__:
+
+neplest [vyctovy typ category](#task-categories) s entitou category. 
+
+    
+### Zmena poradi/pridani/odebrani ukolu pro/z/do dane kategorie.  [PUT] 
+
+Ocekava pole UUID ukolu v danem poradi. 
+
+Poradi ukolu na serveru zmergnuje, vznik-li konflikt. Server vraci seznam ukolu pro danoou kategorii a pro dany den. 
+
+Strategie mergovani: __posledni vyhrava__.
+
+#### Aktualizace zarazeni ukolu do/z kategorie
+
+__Pridani__: Pokud dany ukol neni v kategorii pro ktere prijde jeho poradi, bude do kategorie zarazen.
+
+__Odebrani__: Pokud nejaky ukol je v kategorii pro ktere prijde poradi, a dany ukol neni mezi UUID na vstupu, je z dane kategorie odebran.
+
+__Omezeni__: Plati ze ukol je vzdy aspon v jedne kategorii. Pokud by mel ukol zustat bez kategorie, automaticky spadne zpet do kategorie INBOX.
+
+
+
++ Parameters
+    + category (required, string `INBOX`) ... kategorie jedna z hodnot vyctoveho typu kategorii [vice o kategoriich ukolu](#task-categories) 
+    
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "category": "INBOX""
+                "tasks": [1, 2, 3, 4, 5]
+            }
+
++ Response 200 (application/json)
+
+    [Categories list][]   
+
+# Group Projekt
+<a name="projects"></a>
+Projekt umoznuje seskupovat tasky do logickych skupin. 
+
+Zdroje pro zpristupneni projektu prihlaseneho uzivatele. 
+
+## Autorizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+
+## Parametry entity project:
 
 + id (string) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + title (string) : název projektu
