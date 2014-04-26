@@ -44,13 +44,50 @@ Pro ucely testovani a tohoto MOCu pouzivejte jako Autorization string 'QWxhZGRpb
 
 TODO
 
-### <a name="timestamp"></a> Timestamp, urceni casu
+### <a name="timestamp"></a> Timestamp - urceni data a casu
 
-TODO
+Pro formatovani data a casu pouzivame retezec ve formatu [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601). Vsechny casy zasilane na server a vracene serverem jsou v casove zone [UTC](http://en.wikipedia.org/wiki/UTC).
 
-### <a name="since"></a> Since, rozdilove prirustky
+Timestamp v jinych casovych zonach bude pred ulozenim na serveru vzdy preveden do UTC.
 
-TODO
+Timestamp s chybejici casovou zonou bude pred ulozenim na serveru doplnen do UTC.
+
+Ukazky (obe jsou ekvivalentni)
+ 
+* __2014-04-25T23:41:14+00:00__ 
+* __2014-04-25T23:41:14__
+
+
+### <a name="date"></a> Date - urceni data
+
+Date jako podmnozina Timestamp se ridi stejnymi pravidli jako timestamp. [Vice o formatu timestamp](#timestamp).
+
+U data neni podpora pro casove zony.
+
+Ukazky (obe jsou ekvivalentni)
+ 
+* __2014-04-25__ 
+
+### <a name="search"></a> Search - semi-fultextove vyhledavani
+
+Zdroje podproujici vyhledavani maji parametr search. U konkretniho zdroje je vzdy uvedeno, v jakych atributech entity hleda. 
+
+Na vstup mozno zaslat libovolny retezec, i vice slove, mozno pouzivat wildcard.
+
+U vice slov dojde k jejich rozdeleni podle bilych znaku a hledani kazde casti samostatne. Prebytecne mezery na zacatku a na konci kazdeho retezece, jsou odstraneny.
+
+Podporovane wildcard:
+
+* * - 0 - n libovolnych znaku
+* ? - jeden libovolny znak
+
+### <a name="since"></a> Since - rozdilove prirustky
+
+Since slouzi k omezeni zasilanych dat mezi klientem a serverem. Kazdy klient si muze pamatovat datum posledni aktualizace dat ze serveru. Pri zaslani since na zdroje, ktere toto podporuji, server vrati jen entity modifikovane po tomto datu. Lze tak ziskavat pouze prirustky zmen v danem zdroji.
+
+Since je ve formatu timestamp, [vice o formatu timestamp](#timestamp).
+
+Pouziti since neni vylucne z zadnym dalsi parametrem zdroje (neni li uvedeno jinak). Lze tedy napr. kombinovat since i search.
 
 ### <a name="colors"></a> Barvy
 
@@ -192,7 +229,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 
 ## <a name="task-categories"></a> Kategorie ukolu
 
-Parametru *category* kazdeho tasku nese stringovou identifikaci kategorii. Kategoriim je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
+Vyctovy typ. Parametr *categories* kazdeho tasku nese kolekci tohoto vyctoveho typu stringovych identifikaci kategorii. Kategoriim je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
 
 + INBOX
 + NEXT
@@ -255,7 +292,7 @@ Jeden konkretni asset daneho ukolu a manipulace s nim.
 
 + Parameters
     + taskId (required, string) ... UUID tasku kteremu asset patri
-    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+    + id (required, string) ... UUID zaznamu - assetu ktery ma byt ziskan/updatovan
 
 + Model (application/json)
 
@@ -397,7 +434,7 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
     + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
     + limit (optional, int, `10`) ... omezeni poctu zaznamu
     + offset (optional, int, `30`) ... ofset ve vyhledavani
-    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u projektu hleda v *title*
+    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u tohoto zdroje hleda v *title*. [Vice o formatu vyhledavani](#search)
 
 + Request
     + Headers
@@ -544,7 +581,7 @@ Kolekce tagu
     + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
     + limit (optional, int, `10`) ... omezeni poctu zaznamu
     + offset (optional, int, `30`) ... ofset ve vyhledavani
-    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u tagu hleda v *title*
+    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u tagu hleda v *title*, [Vice o formatu vyhledavani](#search)
  
 + Request
     + Headers
@@ -565,15 +602,15 @@ Kalendar se sklada ze dnu. Den/termin je spojen s ukolem skrze asset typu:
 + asset __deadline__ pro tento den
 + asset __repeat__, který zahrnuje tento den.je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
 
-__Pridani ukolu do kalendare zpusobuje zpusobuje jednoho z assetu k danemu ukolu.__
+__Pridani ukolu do kalendare zpusobuje pridani jednoho z assetu vyse k danemu ukolu.__
 
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
 ## Parametry termu:
 
-+ date (timestamp) : planovane datum [vice o formatu timestamp](#timestamp) 
-+ tasks (array) : pole UUID tasku nebo pole kompletnich task - v zavislosti na __fullTasks__ [vice o tasku](#tasks)
++ date (timestamp) : planovane datum [vice o formatu date](#date) 
++ tasks (array) : pole UUID tasku nebo pole kompletnich task - v zavislosti na parametru __fullTasks__ [vice o tasku](#tasks)
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
@@ -661,7 +698,7 @@ Kolekce termu
 ### Ziskani ukolu pro dany den [GET] 
 
 + Parameters
-    + date (optional, date, `2013-01-01`)  ... date, urcuje zaznamy pro dany den
+    + date (optional, date, `2013-01-01`)  ... date, urcuje zaznamy pro dany den, [vice o formatu date](#date) 
     + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since).
     + fullTasks = `false` (optional, boolean, `false`) ... zda expandovat vsechny tasky. Pokud je true, bude parametr *tasks* obshovat expandovanou kolekci tasku. [Vice o tasku](#task)
     + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametr *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
@@ -677,12 +714,20 @@ Kolekce termu
 
 ## Terms rank [/terms/{date}]
 
-Kolekce termu - zmena poradi
+Kolekce termu
+
+Zdroj urceny pro zmenu poradi ukolu pro dany den. 
     
 ### Zmena poradi ukolu pro dany den [PUT] 
 
+Ocekava pole UUID ukolu v danem poradi. 
+
+Poradi ukolu na serveru zmergnuje, vznik-li konflikt a vraci Terms list pro dany den. 
+
+Strategie mergovani: __posledni vyhrava__.
+
 + Parameters
-    + date (required, date, `2013-01-01`)  ... date, urcuje zaznamy pro dany den
+    + date (required, date, `2013-01-01`)  ... date, urcuje zaznamy pro dany den,  [vice o formatu date](#date)
 
 + Request
     + Headers
@@ -831,7 +876,7 @@ Kolekce projektu
     + since (optional, string, `2013-01-01 12:00:00`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since)
     + limit (optional, int, `10`) ... omezeni poctu zaznamu
     + offset (optional, int, `30`) ... ofset ve vyhledavani
-    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u projektu hleda v *title*
+    + search (optional, string, `Hledany retezec`) ... semi-fulltextove vyhledavani, u projektu hleda v *title*, [Vice o formatu vyhledavani](#search)
  
 + Request
     + Headers
