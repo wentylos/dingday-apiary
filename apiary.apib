@@ -617,7 +617,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
-## Terms list [/terms/{date}/{?since,fullTasks,withAssets}]
+## Terms list [/terms/{date}/{?fullTasks,withAssets}]
 
 Kolekce termu
 
@@ -702,7 +702,6 @@ Kolekce termu
 
 + Parameters
     + date (optional, date, `2014-01-01`)  ... date, urcuje zaznamy pro dany den, [vice o formatu date](#date) 
-    + since (optional, string, `2014-01-01T12:00:00Z`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since).
     + fullTasks = `false` (optional, boolean, `false`) ... zda expandovat vsechny tasky. Pokud je true, bude parametr *tasks* obshovat expandovanou kolekci tasku. [Vice o tasku](#task)
     + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametr *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
 
