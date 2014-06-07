@@ -228,22 +228,21 @@ Zdroj pro zpristupneni ukolu prihlaseneho uzivatele.
 
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace).
 
-## <a name="task-categories"></a> Kategorie ukolu
+## <a name="task-status"></a> Stav ukolu
 
-Vyctovy typ. Parametr *categories* kazdeho tasku nese kolekci tohoto vyctoveho typu stringovych identifikaci kategorii. Kategoriim je treba na urovni klientu pridat sematnitku. Podporujeme tyto kategorie:
+Vyctovy typ. Parametr *status* kazdeho tasku nese informaci o stavu tasku dle hodnot stringovych identifikaci stavu. Stavum je treba na urovni klientu pridat sematnitku. Podporujeme tyto stavy:
 
-+ INBOX
-+ NEXT
++ NEW
 + SCHEDULED
-+ WAITING_FOR
-+ SUSPENDED
++ CALENDAR
 + COMPLETED
++ TODO - jake jeste?
 
 ## Parametry entity task:
 
 + id (int) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + title (string) : název ukolu
-+ categories (list) : kolekce vyctoveho typu, kategorii ve kterych je ukol zarazen - [vice o kategoriich ukolu](#task-categories)
++ status (enum) : stav, hodnota vyctoveho typu status, stav ve kterem se ukol nachazi - [vice o stavech ukolu](#task-statuses)
 + assets (list) : kolekce assetu projektu - [vice o assetech](#task-assets-list)
 + isDone (boolean) : je ukol hotovy?
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
@@ -266,7 +265,7 @@ Jeden konkretni task a manipulace s nim.
             {
                 "id": 6, 
                 "title": "Mesicni nakup"
-                "categories": ["SCHEDULED"]
+                "status": "SCHEDULED"
                 "assets": null
                 "isDone": false
                 "lastModified": "2014-11-26T11:08:09Z"
@@ -310,7 +309,7 @@ Jeden konkretni asset daneho ukolu a manipulace s nim.
                 "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
             }
 
-### Info o assetu [GET]
+### Info o konkretnim assetu [GET]
 
 Umoznuje ziskat detailni informace o jednom assetu
 
@@ -463,7 +462,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + title (string) : název projektu
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
-+ color (string) : barva [vice o barvach](#colors)
++ color (enum) : barva, hodnota vyctoveho typu [vice o barvach](#colors)
 
 ## Tag [/tags/{id}]
 
@@ -605,7 +604,10 @@ Kalendar se sklada ze dnu. Den/termin je spojen s ukolem skrze asset typu:
 + asset __deadline__ pro tento den
 + asset __repeat__, který zahrnuje tento den.je připomínka činnosti, kterou musí uživatel provést/delegovat/odložit/smazat.
 
-__Pridani ukolu do kalendare zpusobuje pridani jednoho z assetu vyse, k danemu ukolu. Akce POST neni podporovana. PUT slouzi pouze k update poradi.__
+##Pridani ukolu do kalendare
+Pridani ukolu do kalendare zpusobuje pridani jednoho z assetu vyse, k danemu ukolu. Novy ukol je zarazen do kalendare vzdy na zacatek seznamu ukolu pro dany den.
+
+__Akce POST neni podporovana. PUT slouzi pouze k update poradi.__
 
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
@@ -617,7 +619,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
-## Terms list [/terms/{date}/{?fullTasks,withAssets}]
+## Terms list [/terms/{date_from}/{date_to}{?fullTasks,withAssets}]
 
 Kolekce termu
 
@@ -644,7 +646,7 @@ Kolekce termu
                 "tasks": [{
                     "id": 6, 
                     "title": "Mesicni nakup"
-                    "categories": ["CALENDAR", "INBOX"]
+                    "status": "CALENDAR"
                     "assets": [{
                         "id": 1 
                         "type": "NOTE"
@@ -665,7 +667,7 @@ Kolekce termu
                 }, {
                     "id": 8, 
                     "title": "Mesicni nakup"
-                    "categories": ["CALENDAR"]
+                    "status": "CALENDAR"
                     "assets": [{
                         "id": 10 
                         "type": "SCHEDULED_FOR"
@@ -700,8 +702,9 @@ Kolekce termu
             
 ### Ziskani ukolu pro dany den [GET] 
 
-+ Parameters
-    + date (optional, date, `2014-01-01`)  ... date, urcuje zaznamy pro dany den, [vice o formatu date](#date) 
++ Parameters 
+    + date_from (required, date_from, `2014-02-01`) ... datum od, pro urceni leve hranice rozsahu data. Neni-li uvedeno *date_from*, vraci ukoly jen pro dany den *date_to*. [Vice o formatu data](#date) 
+    + date_to (optional, date_to, `2014-02-01`) ... datum do, pro urceni prave hranice rozsahu data. Neni-li uvedeno, vraci ukoly jen pro dany den *date_from*. [Vice o formatu data](#date) 
     + fullTasks = `false` (optional, boolean, `false`) ... zda expandovat vsechny tasky. Pokud je true, bude parametr *tasks* obshovat expandovanou kolekci tasku. [Vice o tasku](#task)
     + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametr *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
 
@@ -724,7 +727,7 @@ Zdroj urceny pro zmenu poradi ukolu pro dany den.
 
 Ocekava pole UUID ukolu v danem poradi. 
 
-Poradi ukolu na serveru zmergnuje, vznik-li konflikt. Server vraci seznam termu pro dany den. 
+Poradi ukolu na serveru zmergnuje, vznik-li konflikt podle strategie nize. Server vraci seznam termu pro dany den. 
 
 Strategie mergovani: __posledni vyhrava__.
 
@@ -745,19 +748,31 @@ Strategie mergovani: __posledni vyhrava__.
             }
 
 + Response 200 (application/json)
-
-    [Terms list][]   
+        
+        {
+            "date": "2014-10-10"
+            "lastModified": "2014-11-26T11:08:09Z"
+            "created": "2014-11-26T11:08:09Z"
+            "tasks": [1, 2, 3, 4, 5]
+        }
     
     
 # Group Kategorie
 <a name="categories"></a>
-Zdroje pro zpristupneni ukolu s poradim v dane kategorii, aktualizaci poradi a zarazeni/odebrani ukolu z/do kategorie pro prihlaseneho uzivatele.
+Zdroje pro zpristupneni ukolu s poradim v dane kategorii, aktualizaci poradi ukolu v kategorii pro prihlaseneho uzivatele.
 
-__UPOZORNENI__:
+## <a name="categories-list"></a> Kategorie
 
-neplest [vyctovy typ category](#task-categories) s entitou category a zdrojem /categories. 
+Pro kazdou hodnotu z vyctoveho typu nize, existuje vlastni zdroj pro zpristupneni poradi ukolu v dane kategorii, viz parametr *{category}*.
 
-Pro kazdou z [hodnot vyctoveho typu category](#task-categories) existuje vlastni zdroj, viz parametr *{category}*.
+Podporovane kategorie:
+
++ INBOX
++ NEXT
++ SCHEDULED
++ WAITING_FOR
++ SUSPENDED
++ COMPLETED
 
 ## Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
@@ -769,92 +784,29 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
-## Categories list [/categories/{category}/{?since,fullTasks,withAssets}]
+## Category task list [/categories/{category}/{?since,fullTasks,withAssets}]
 
-Kolekce entit kategorii.
+Entita kategorie s kolekci ukolu.
 
 
 + Model (application/json)
 
-    JSON reprezentace jednoho Termu. 
+    JSON reprezentace jedne Kategorie. 
     
        + Body
 
-            [{
+            {
                 "title": "INBOX"
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
                 "tasks": [1, 2, 3, 4, 5]
-            }, {
-                "title": "INBOX"
-                "lastModified": "2014-11-26T11:08:09Z"
-                "created": "2014-11-26T11:08:09Z"
-                "tasks": [7]
-            }, {
-                "title": "INBOX"
-                "lastModified": "2014-11-26T11:08:09Z"
-                "created": "2014-11-26T11:08:09Z"
-                "tasks": [{
-                    "id": 6, 
-                    "title": "Mesicni nakup"
-                    "categories": ["CALENDAR", "INBOX"]
-                    "assets": [{
-                        "id": 1 
-                        "type": "NOTE"
-                        "lastModified": "2014-11-26T11:08:09Z"
-                        "created": "2014-11-26T11:08:09Z"
-                        "title": "Kino"
-                        "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
-                    }, {
-                        "id": 3 
-                        "type": "SCHEDULED_FOR"
-                        "lastModified": "2014-11-26T11:08:09Z"
-                        "created": "2014-11-26T11:08:09Z"
-                        "date": "2014-10-13"
-                    }]
-                    "isDone": false
-                    "lastModified": "2014-11-26T11:08:09Z"
-                    "created": "2014-11-26T11:08:09Z"
-                }, {
-                    "id": 8, 
-                    "title": "Mesicni nakup"
-                    "categories": ["CALENDAR"]
-                    "assets": [{
-                        "id": 10 
-                        "type": "SCHEDULED_FOR"
-                        "lastModified": "2014-11-26T11:08:09Z"
-                        "created": "2014-11-26T11:08:09Z
-                        "date": "2014-10-13"
-                    }, {
-                        "id": 6 
-                        "type": "TAG"
-                        "lastModified": "2014-11-26T11:08:09Z"
-                        "created": "2014-11-26T11:08:09Z"
-                        "items": [{
-                            "id": 1 
-                            "title": "Babicka a Deda"
-                            "lastModified": "2014-11-26T11:08:09Z"
-                            "created": "2014-11-26T11:08:09Z"
-                            "color": "BLACK"
-                        }, {
-                            "id": 2 
-                            "title": "Manzelka"
-                            "lastModified": "2014-11-26T11:08:09Z"
-                            "created": "2014-11-26T11:08:09Z"
-                            "color": "RED"
-                        }]
-                    }]
-                    "isDone": false
-                    "lastModified": "2014-11-26T11:08:09Z"
-                    "created": "2014-11-26T11:08:09Z"
-                }]
-            }] 
+            } 
             
             
 ### Ziskani ukolu pro kategorii INBOX [GET] 
 
 + Parameters
-    + category (required, string `INBOX`) ... kategorie jedna z hodnot vyctoveho typu kategorii [vice o kategoriich ukolu](#task-categories) 
+    + category (required, string `INBOX`) ... kategorie jedna z hodnot vyctoveho typu kategorii [vice o typu kategorie](#categories-list) 
     + since (optional, string, `2014-01-01T12:00:00Z`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since).
     + fullTasks = `false` (optional, boolean, `false`) ... zda expandovat vsechny tasky. Pokud je true, bude parametr *tasks* obshovat expandovanou kolekci tasku. [Vice o tasku](#task)
     + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametr *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
@@ -866,16 +818,16 @@ Kolekce entit kategorii.
 
 + Response 200 (application/json)
 
-    [Categories list][]   
+    [Category task list][]   
 
 ## Categories rank [/categories/{category}]
 
 Kolekce entit kategorii.
 
-Zdroj urceny pro zmenu poradi/pridani/odebrani ukolu pro/z/do dane kategorie. 
+Zdroj urceny pro zmenu poradi ukolu v dane kategorie. 
 
     
-### Zmena poradi/pridani/odebrani ukolu pro/z/do dane kategorie.  [PUT] 
+### Zmena poradi ukolu v dane kategorie.  [PUT] 
 
 Ocekava pole UUID ukolu v danem poradi. 
 
@@ -883,7 +835,7 @@ Poradi ukolu na serveru zmergnuje, vznik-li konflikt. Server vraci seznam ukolu 
 
 Strategie mergovani: __posledni vyhrava__.
 
-#### Aktualizace zarazeni ukolu do/z kategorie
+#### TODO - SMAZAT po konzultaci s Hanysem - Aktualizace zarazeni ukolu do/z kategorie
 
 __Pridani__: Pokud dany ukol neni v kategorii pro ktere prijde jeho poradi, bude do kategorie zarazen.
 
@@ -911,7 +863,7 @@ __Omezeni__: Plati ze ukol je vzdy aspon v jedne kategorii. Pokud by mel ukol zu
 
 + Response 200 (application/json)
 
-    [Categories list][]   
+    [Category task list][]  
 
 # Group Projekty
 <a name="projects"></a>
