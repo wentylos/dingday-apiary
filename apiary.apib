@@ -116,7 +116,9 @@ Zdroj pro praci s uzivatelem, bez znalosti ID uzivatele.
     
             {
                 "id": 3 
-                "title": "Jmeno uzivatele"
+                "email": "info@example.com"
+                "name": "Vaclav"
+                "surname": "Jurecek"
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
             }
@@ -140,6 +142,24 @@ Vytvori/registruje noveho uzivatele
 + Response 201 (application/json)
 
     [User][]
+    
+## User login [/users/login]
+
+Zdroj pro prihlaseni uzivatele.
+
+### Prihlasini uzivatele [GET]
+
+Prihlasi uzivatele a vrati info o uzivateli
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 201 (application/json)
+
+    [User][]
 
 ## User [/users/{id}]
 
@@ -151,19 +171,6 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + Parameters
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
     
-### Info o uzivateli [GET]
-
-Umoznuje ziskat detailni informace o danem uzivateli
-
-+ Request
-    + Headers
-    
-            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-
-+ Response 200
-    
-    [User][]
-
 ### Editovat uzivatele [PUT]
 
 Updatuje daneho uzivatele, editovat lze vsechny parametry uzivatele, krom *generovanych serverem*
@@ -210,7 +217,8 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
     
             {
                 "id": 3 
-                "title": "Jmeno uzivatele"
+                "locale": ""
+                "timezone": ""
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
             }
