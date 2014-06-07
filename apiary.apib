@@ -101,11 +101,179 @@ V mistech kde se vyskutuje parametr *color* je dostupna pouze stringova konstant
 
 # Group Uzivatel
 <a name="users"></a>
-Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci profilu.
+Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci profilu a nastaveni.
 
-## Autorizace
-TODO - jen nekde
+
+## User [/users]
+
+Zdroj pro praci s uzivatelem, bez znalosti ID uzivatele.
+
++ Model (application/json)
+
+    JSON reprezentace jednoho Uzivatele. 
+
+    + Body
+    
+            {
+                "id": 3 
+                "title": "Jmeno uzivatele"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+            }
+            
+### Vytvořit/registrovat noveho uzivatele [POST]
+
+Vytvori/registruje noveho uzivatele
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            { 
+                "title": "Babicka a Deda" 
+            }
+
++ Response 201 (application/json)
+
+    [User][]
+
+## User [/users/{id}]
+
+Jeden konkretni uzivatel, uzivatelsky ucet a manipulace s nim
+
+### Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+    
+### Info o uzivateli [GET]
+
+Umoznuje ziskat detailni informace o danem uzivateli
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [User][]
+
+### Editovat uzivatele [PUT]
+
+Updatuje daneho uzivatele, editovat lze vsechny parametry uzivatele, krom *generovanych serverem*
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "title": "Upravene jmeno uzivatele"
+            }
+
++ Response 200
+    
+    [User][]
+
+### Smazat uzivatele [DELETE]
+
+Smaze daneho uzivatele a vsechny jeho data.
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 204
+
+## User config [/users/{id}/config]
+
+Nastaveni pro konkretniho uzivatele
+
+### Autorizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+
++ Model (application/json)
+
+    JSON reprezentace nastaveni jednoho uzivatele. 
+
+    + Body
+    
+            {
+                "id": 3 
+                "title": "Jmeno uzivatele"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+            }
+
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+
+    
+### Info o uzivateli [GET]
+
+Umoznuje ziskat detailni informace o nastaveni uzivateli
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [User config][]
+
+### Editovat nastaveni uzivatele [PUT]
+
+Updatuje nastaveni daneho uzivatele, editovat lze vsechny parametry nastaveni uzivatele, krom *generovanych serverem*
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "title": "Upravene jmeno uzivatele"
+            }
+
++ Response 200
+    
+    [User config][]
+
+## User reset hesla [/users/passwordResetRequest]
+
+Zdroj pro reset hesla uzivatele.
+
+### Reset hesla [POST]
+
+Resetuje heslo uzivateli, jehoz email byl zaslan v body requestu.
+
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            { 
+                "email": "thegtdteam@gmail.com" 
+            }
+
++ Response 200 
 
 # Group Assety
 
@@ -464,10 +632,8 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 + color (enum) : barva, hodnota vyctoveho typu [vice o barvach](#colors)
 
-## Tag [/tags/{id}]
+## Tag [/tags]
 
-Jeden konkretni tag a manipulace s nim. 
-    
 + Model (application/json)
 
     JSON reprezentace jednoho Tagu. 
@@ -481,6 +647,31 @@ Jeden konkretni tag a manipulace s nim.
                 "created": "2014-11-26T11:08:09Z"
                 "color: "BLACK"
             }
+            
+            
+### Vytvořit nový tag [POST]
+
+Vytvori novy tag pro prihlaseneho uzivatele
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            { 
+                "title": "Babicka a Deda" 
+            }
+
++ Response 201 (application/json)
+
+    [Tag][]
+
+## Konkretni Tag [/tags/{id}]
+
+Jeden konkretni tag a manipulace s nim. 
 
 + Parameters
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
@@ -516,26 +707,6 @@ Updatuje editovat jeden tagu, editovat lze vsechny parametry tagu, krom *generov
 
 + Response 200
     
-    [Tag][]
-
-### Vytvořit nový tag [POST]
-
-Vytvori novy tag pro prihlaseneho uzivatele
-
-+ Request
-    + Headers
-    
-            Content-type: application/json
-            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-
-    + Body
-    
-            { 
-                "title": "Babicka a Deda" 
-            }
-
-+ Response 201 (application/json)
-
     [Tag][]
 
 ### Smazat tag [DELETE]
@@ -881,11 +1052,8 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
+## Project [/projects]
 
-## Project [/projects/{id}]
-
-Jeden konkretni projekt a manipulace s nim. 
-    
 + Model (application/json)
 
     JSON reprezentace jednoho Projektu. 
@@ -898,42 +1066,6 @@ Jeden konkretni projekt a manipulace s nim.
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
             }
-
-+ Parameters
-    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
-    
-### Info o projektu [GET]
-
-Umoznuje ziskat detailni informace o jednom projektu
-
-+ Request
-    + Headers
-    
-            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-
-+ Response 200
-    
-    [Project][]
-
-### Editovat projekt [PUT]
-
-Updatuje editovat jeden projekt, editovat lze vsechny parametry projektu, krom *generovanych serverem*
-
-+ Request
-    + Headers
-    
-            Content-type: application/json
-            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-
-    + Body
-    
-            {
-                "title": "Upraveny titulek"
-            }
-
-+ Response 200
-    
-    [Project][]
 
 ### Vytvořit nový projekt [POST]
 
@@ -955,7 +1087,50 @@ Vytvori novy projekt pro prihlaseneho uzivatele
 
     [Project][]
 
+
+## Konkretni Project [/projects/{id}]
+
+Jeden konkretni projekt a manipulace s nim. 
+
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan/smazan
+    
+### Info o projektu [GET]
+
+Umoznuje ziskat detailni informace o jednom projektu
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [Project][]
+
+### Editovat projekt [PUT]
+
+Updatuje dany projekt, editovat lze vsechny parametry projektu, krom *generovanych serverem*
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "title": "Upraveny titulek"
+            }
+
++ Response 200
+    
+    [Project][]
+
 ### Smazat projekt [DELETE]
+
+Smaze dany projekt a vsechny ukoly daneho projektu
 
 + Request
     + Headers
@@ -963,6 +1138,7 @@ Vytvori novy projekt pro prihlaseneho uzivatele
             Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 
 + Response 204
+
 
 ## Projects list [/projects{?since,search,limit,offset}]
 
@@ -1007,4 +1183,6 @@ Kolekce projektu
 + Response 200 (application/json)
 
     [Projects list][]   
+
+
     
