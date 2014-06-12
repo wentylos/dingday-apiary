@@ -585,12 +585,15 @@ Vytvori novy ukol pro prihlaseneho uzivatele.
 
 + Parameters
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
-    + withAssets = `true` (optional, boolean) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
-
+ 
 
 ### Info o ukolu [GET]
 
 Umoznuje ziskat detailni informace o jednom ukolu
+
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+    + withAssets = `true` (optional, boolean) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
 
 + Request
     + Headers
@@ -601,12 +604,7 @@ Umoznuje ziskat detailni informace o jednom ukolu
     
     [Task][]
 
-## Task editace [/tasks/{id}]
 
-Jeden konkretni task a manipulace s nim. 
-
-+ Parameters
-    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
 
 ### Editovat ukol [PUT]
 
@@ -673,10 +671,12 @@ Smaze dany ukol a vsechny asety daneho ukolu
 ### Vytvorit novy assetu k danemu tasku [POST]
 
 Vytvori novy asset k danemu tasku.
+Novy asset je zarazen na prvni misto mezi assety daneho ukolu.
 
 + Request
     + Headers
-    
+            
+            Content-type: application/json
             Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 
     + Body
@@ -875,15 +875,18 @@ Kolekce assetu daneho tasku.
     
     [Asset list][]
 
-### Aktualizace poradi assetu [PUT]
+### Zmena poradi assetu [PUT]
 
-Aktualizace poradi assetu nad danym taskem. 
-Assety mohou prijit jen jako pole UUDI assetu v danem poradi, nebo i plne assety.
-Pokud plne, pak se provede aktualizace assetu.
+Ocekava pole UUDI assetu v danem poradi.
+
+Poradi assetu se na serveru zmerguje, vznikne-li konflikt. Server vrazi seznam asset ussetu pro dany ukol.
+
+Strategie mergovani: _posledni vyhrava_.
 
 + Request
     + Headers
-    
+            
+            Content-type: application/json
             Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
     
     + Body
@@ -1046,6 +1049,30 @@ Kolekce tagu
 + Response 200 (application/json)
 
     [Tags list][]   
+    
+### Zmena poradi tagu [PUT]
+
+Ocekava pole UUDI tagu v danem poradi.
+
+Poradi tagu se na serveru zmerguje, vznikne-li konflikt. Server vrazi seznam tagu.
+
+Strategie mergovani: _posledni vyhrava_.
+
++ Request
+    + Headers
+            
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+    
+    + Body
+        
+            {
+                [1, 3, 5, 8]
+            }   
+
++ Response 200
+
+     [Tags list][]
 
 # Group Kalendar/Terminy
 <a name="terms"></a>
@@ -1170,12 +1197,6 @@ Kolekce termu
 
     [Terms list][]   
 
-## Terms rank [/terms/{date}]
-
-Kolekce termu
-
-Zdroj urceny pro zmenu poradi ukolu pro dany den. 
-    
 ### Zmena poradi ukolu pro dany den [PUT] 
 
 Ocekava pole UUID ukolu v danem poradi. 
@@ -1185,7 +1206,7 @@ Poradi ukolu na serveru zmergnuje, vznik-li konflikt podle strategie nize. Serve
 Strategie mergovani: __posledni vyhrava__.
 
 + Parameters
-    + date (required, date, `2014-01-01`)  ... date, urcuje zaznamy pro dany den,  [vice o formatu date](#date)
+    + date_from (required, date, `2014-01-01`)  ... date, urcuje zaznamy pro dany den,  [vice o formatu date](#date)
 
 + Request
     + Headers
@@ -1273,11 +1294,6 @@ Zdroj urceny pro pristup k entite filter, ktera nese kolekci ukolu, odpovidajici
 
     [Tasks filter][]   
 
-## Tasks filter rank [/filters/{filter}]
-
-Zdroj urceny pro zmenu poradi ukolu pro dany filter (kategorii). 
-
-    
 ### Zmena poradi ukolu pro dany filter.  [PUT] 
 
 Ocekava pole UUID ukolu v danem poradi. 
