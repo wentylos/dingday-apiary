@@ -127,9 +127,25 @@ Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, aktivaci,
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
-## User Registrace [/users]
+## User [/users]
 
 Zdroj pro registraci uzivatele.
+
++ Model (application/json)
+
+    JSON reprezentace jednoho Uzivatele. 
+
+    + Body
+    
+            {
+                "id": 3 
+                "email": "dingday@example.com"
+                "name": "Jan"
+                "surname": "Novak"
+                "isActive": true
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+            }
 
 ### Registrovat uzivatele [POST]
 <a name="user-registration"></a>
@@ -200,7 +216,7 @@ Prihlasi uzivatele a v pripade uspesneho prilaseni vrati token pro dalsi komunik
             "authToken": "p4jk432k8347dfhag57adsfhl4dsa"
         }
 
-## User [/users/{id}]
+## Konkretni User [/users/{id}]
 
 Jeden konkretni uzivatel, uzivatelsky ucet a manipulace s nim
 
@@ -209,22 +225,6 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autent
 
 + Parameters
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
-    
-+ Model (application/json)
-
-    JSON reprezentace jednoho Uzivatele. 
-
-    + Body
-    
-            {
-                "id": 3 
-                "email": "dingday@example.com"
-                "name": "Jan"
-                "surname": "Novak"
-                "isActive": true
-                "lastModified": "2014-11-26T11:08:09Z"
-                "created": "2014-11-26T11:08:09Z"
-            }
 
 ### Editovat uzivatele [GET]
 
