@@ -101,12 +101,12 @@ V mistech kde se vyskutuje parametr *color* je dostupna pouze stringova konstant
 
 # Group Uzivatel
 <a name="users"></a>
-Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci profilu a nastaveni.
+Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, aktivaci, editaci profilu, reset hesla a nastaveni.
 
 
 ## User [/users]
 
-Zdroj pro registraci uzivatelem.
+Zdroj pro registraci uzivatele.
 
 + Model (application/json)
 
@@ -124,9 +124,9 @@ Zdroj pro registraci uzivatelem.
                 "created": "2014-11-26T11:08:09Z"
             }
             
-### Vytvořit/registrovat noveho uzivatele [POST]
+### Registrovat uzivatele [POST]
 <a name="user-registration"></a>
-Vytvori/registruje noveho uzivatele
+Registrace noveho uzivatele
 
 + Email je chapan jako login, z teto podstaty je email unikatni
 + Ucet uzivatele se musi nejdrive aktivovat, viz [aktivace uzivatle](#user-activation)
@@ -155,7 +155,7 @@ Vytvori/registruje noveho uzivatele
 <a name="user-activation"></a>
 Zdroj pro aktivaci uzivatele. Vyzaduje aktivacni hash, viz [registrace uzivatele](#user-registration)
 
-### Aktivace uzivatelskeho uctu [PUT]
+### Aktivovat uzivatele [PUT]
 
 Aktivuje ucet uzivatele, v pripade uspechu vrati info o uzivateli.
 
@@ -177,7 +177,7 @@ Aktivuje ucet uzivatele, v pripade uspechu vrati info o uzivateli.
 
 Zdroj pro prihlaseni uzivatele.
 
-### Prihlaseni uzivatele [GET]
+### Prihlasit uzivatele [GET]
 
 Prihlasi uzivatele a v pripade uspesneho prilaseni vrati info o uzivateli
 
