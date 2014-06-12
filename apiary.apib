@@ -498,13 +498,21 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autent
 
 ## <a name="task-status"></a> Stav ukolu
 
-Vyctovy typ. Parametr *status* kazdeho tasku nese informaci o stavu tasku dle hodnot stringovych identifikaci stavu. Stavum je treba na urovni klientu pridat sematnitku. Podporujeme tyto stavy:
+Vyctovy typ. 
+Parametr *status* kazdeho tasku nese informaci o stavu tasku. 
+Stavum je treba na urovni klientu pridat sematnitku. 
 
-+ NEW
-+ SCHEDULED
-+ ANYTIME
-+ WAITING
-+ COMPLETED
+Neplest s [kategorii](#categories) - kategorie jsou poze filtry nad tasky dle statusu a dalsich kriterii.
+
+Poznamka: *Zmena stavu probiha vyhradne na zaklade D&D - presunu ukolu do polozky v menu*
+
+Podporujeme tyto stavy:
+
++ NEW - polozka menu INBOX
++ SCHEDULED - polozka menu KALENDAR
++ ANYTIME - polozka menu SUSPNEDED
++ WAITING - polozka menu WAITING FOR
++ COMPLETED - polozka menu COMPLETED
 
 ## Parametry entity task:
 
