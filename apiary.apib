@@ -117,6 +117,16 @@ V mistech kde se vyskutuje parametr *color* je dostupna pouze stringova konstant
 Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, aktivaci, editaci profilu, reset hesla a nastaveni.
 
 
+## Parametry entity user:
+
++ id (int) : unikátní UUID zaznamu - [vice o UUID](#uuid)
++ title (string) : název ukolu
++ email (string) : email/login uzivatele
++ name (string) : jmeno uzivatele
++ surname (string): prijmeni uzivatele
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
+
 ## User Registrace [/users]
 
 Zdroj pro registraci uzivatele.
@@ -269,8 +279,13 @@ Nastaveni pro konkretniho uzivatele
 ### Autentizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
-+ Urceni casove zony viz [UTC](http://cs.wikipedia.org/wiki/Časové_pásmo)
-+ Urceni locale viz [Locale](http://cs.wikipedia.org/wiki/Locale#POSIX_platformy)
+### Parametry entity user config:
+
++ id (int) : unikátní UUID zaznamu - [vice o UUID](#uuid)
++ locale (string) : urceni casove zony viz [UTC](http://cs.wikipedia.org/wiki/Časové_pásmo)
++ timezon (string) : urceni locale viz [Locale](http://cs.wikipedia.org/wiki/Locale#POSIX_platformy)
++ lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
++ created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
 + Model (application/json)
 
@@ -501,16 +516,16 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autent
 Vyctovy typ. 
 Parametr *status* kazdeho tasku nese informaci o stavu tasku. 
 Stavum je treba na urovni klientu pridat sematnitku. 
+Na zaklade stavu lze tasky filtrovat, viz [filtrovani](#filters)
 
-Neplest s [kategorii](#categories) - kategorie jsou poze filtry nad tasky dle statusu a dalsich kriterii.
-
-Poznamka: *Zmena stavu probiha vyhradne na zaklade D&D - presunu ukolu do polozky v menu*
+Poznamka: *Zmena stavu probiha vyhradne na zaklade D&D - presunu ukolu do polozky v menu, server statusy sam na zaklade zadnych pravidel NEMENI!*
 
 Podporujeme tyto stavy:
 
 + NEW - polozka menu INBOX
 + SCHEDULED - polozka menu KALENDAR
-+ ANYTIME - polozka menu SUSPNEDED
++ ANYTIME - polozka menu NEXT
++ SUSPNEDED - polozka menu SUSPENDED
 + WAITING - polozka menu WAITING FOR
 + COMPLETED - polozka menu COMPLETED
 
@@ -1036,41 +1051,46 @@ Strategie mergovani: __posledni vyhrava__.
         }
     
     
-# Group Kategorie
-<a name="categories"></a>
-Zdroje pro zpristupneni ukolu s poradim v dane kategorii, aktualizaci poradi ukolu v kategorii pro prihlaseneho uzivatele.
+# Group Filtry
+<a name="filters"></a>
+Zdroje pro zpristupneni ukolu s poradim, podle prednastavenych kriterii pro dany typ filtru (kategorie) pro prihlaseneho uzivatele.
 
-## <a name="categories-list"></a> Kategorie
+## <a name="filters-list"></a> Existujici filtry
 
-Pro kazdou hodnotu z vyctoveho typu nize, existuje vlastni zdroj pro zpristupneni poradi ukolu v dane kategorii, viz parametr *{category}*.
+Pro kazdou hodnotu z vyctoveho typu nize, existuje vlastni zdroj pro zpristupneni poradi ukolu (i samotnych ukolu) v danem filtru, viz parametr *{filter}*.
 
-Podporovane kategorie:
+Existujici filtry:
 
 + INBOX
+    + status = *NEW* OR (status = *SCHEDULED* AND scheduled_date < now() AND isDone = false) 
 + NEXT
-+ SCHEDULED
+    + status = *ANYTIME*
 + WAITING_FOR
+    + status = *WAITING*
 + SUSPENDED
+    + status = *SUSPENDED*
 + COMPLETED
+    + status = *COMPLETED* OR isDone = true
+
+Pro poradek, existuje jeste filter *DAY* - ukol ma asset scheduled for s danym dnem, ktery explicitne aplikuje na sve vyhledavani zdroj [/terms](#terms). Podle tohoto filtru filtrova nelze jinak, nez pres zdroj /terms ktery navic pracuje s casovym rozmezim.
 
 ## Autentizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
-## Parametry entity category:
+## Parametry entity filter:
 
-+ title (string) : nazev kategorie [vice o kategoriich ukolu](#task-categories) 
++ title (string) : nazev filtru [vice o podporovanych filtrech](#filters-list) 
 + tasks (array) : pole UUID tasku nebo pole kompletnich task - v zavislosti na parametru __fullTasks__ [vice o tasku](#tasks)
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
-## Category task list [/categories/{category}/{?since,fullTasks,withAssets}]
+## Tasks filter [/filters/{filter}/{?since,fullTasks,withAssets}]
 
-Entita kategorie s kolekci ukolu.
-
+Zdroj urceny pro pristup k entite filter, ktera nese kolekci ukolu, odpovidajicich danemu filtru. 
 
 + Model (application/json)
 
-    JSON reprezentace jedne Kategorie. 
+    JSON reprezentace jednoho filtru. 
     
        + Body
 
@@ -1082,10 +1102,10 @@ Entita kategorie s kolekci ukolu.
             } 
             
             
-### Ziskani ukolu pro kategorii INBOX [GET] 
+### Ziskani ukolu pro dany filter [GET] 
 
 + Parameters
-    + category (required, string `INBOX`) ... kategorie jedna z hodnot vyctoveho typu kategorii [vice o typu kategorie](#categories-list) 
+    + filter (required, string `INBOX`) ... nazev filtru jedna z hodnot vyctoveho typu filter [vice o typu filter](#filters-list) 
     + since (optional, string, `2014-01-01T12:00:00Z`) ... timestamp ([vice o formatu timestamp](#timestamp)), vraci jen zaznamy zmenen po datu since. [Vice o fungovani since.](#since).
     + fullTasks = `false` (optional, boolean, `false`) ... zda expandovat vsechny tasky. Pokud je true, bude parametr *tasks* obshovat expandovanou kolekci tasku. [Vice o tasku](#task)
     + withAssets = `true` (optional, boolean, `true`) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametr *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
@@ -1097,35 +1117,23 @@ Entita kategorie s kolekci ukolu.
 
 + Response 200 (application/json)
 
-    [Category task list][]   
+    [Tasks filter][]   
 
-## Categories rank [/categories/{category}]
+## Tasks filter rank [/filters/{filter}]
 
-Kolekce entit kategorii.
-
-Zdroj urceny pro zmenu poradi ukolu v dane kategorie. 
+Zdroj urceny pro zmenu poradi ukolu pro dany filter (kategorii). 
 
     
-### Zmena poradi ukolu v dane kategorie.  [PUT] 
+### Zmena poradi ukolu pro dany filter.  [PUT] 
 
 Ocekava pole UUID ukolu v danem poradi. 
 
-Poradi ukolu na serveru zmergnuje, vznik-li konflikt. Server vraci seznam ukolu pro danoou kategorii a pro dany den. 
+Poradi ukolu na serveru zmergnuje, vznik-li konflikt. Server vraci seznam ukolu pro dany filter. 
 
 Strategie mergovani: __posledni vyhrava__.
 
-#### TODO - SMAZAT po konzultaci s Hanysem - Aktualizace zarazeni ukolu do/z kategorie
-
-__Pridani__: Pokud dany ukol neni v kategorii pro ktere prijde jeho poradi, bude do kategorie zarazen.
-
-__Odebrani__: Pokud nejaky ukol je v kategorii pro ktere prijde poradi, a dany ukol neni mezi UUID na vstupu, je z dane kategorie odebran.
-
-__Omezeni__: Plati ze ukol je vzdy aspon v jedne kategorii. Pokud by mel ukol zustat bez kategorie, automaticky spadne zpet do kategorie INBOX.
-
-
-
 + Parameters
-    + category (required, string `INBOX`) ... kategorie jedna z hodnot vyctoveho typu kategorii [vice o kategoriich ukolu](#task-categories) 
+    + filter (required, string `INBOX`) ... filter jedna z hodnot vyctoveho typu filter [vice o filtrech ukolu](#filters-list) 
     
 + Request
     + Headers
@@ -1136,13 +1144,13 @@ __Omezeni__: Plati ze ukol je vzdy aspon v jedne kategorii. Pokud by mel ukol zu
     + Body
     
             {
-                "category": "INBOX""
+                "filter": "INBOX""
                 "tasks": [1, 2, 3, 4, 5]
             }
 
 + Response 200 (application/json)
 
-    [Category task list][]  
+    [Tasks filter][]  
 
 # Group Projekty
 <a name="projects"></a>
