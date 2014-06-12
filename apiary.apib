@@ -537,14 +537,14 @@ Podporujeme tyto stavy:
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
-## Task [/tasks/{id}{?withAssets}]
+## Seznamy ukolu
+Seznamy ukolu nejsou dostupne na zdroji /tasks. 
+Seznamy ukolu jsou dostupne pres predpripravene filtry ukolu. 
 
-Jeden konkretni task a manipulace s nim. 
+Filtry jsou k dispozici podle [data/terminu](#terms) konani ukolu a podle jejich [stavu](#filters).
 
-+ Parameters
-    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
-    + withAssets = `true` (optional, boolean) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
-    
+## Task [/tasks]
+
 + Model (application/json)
 
     JSON reprezentace jednoho Ukolu. 
@@ -554,12 +554,39 @@ Jeden konkretni task a manipulace s nim.
             {
                 "id": 6, 
                 "title": "Mesicni nakup"
-                "status": "SCHEDULED"
+                "status": "NEW"
                 "assets": null
                 "isDone": false
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
             }
+
+### Vytvořit nový ukol [POST]
+
+Vytvori novy ukol pro prihlaseneho uzivatele.
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            { 
+                "title": "Mesicni nakup" 
+            }
+
++ Response 201 (application/json)
+
+    [Task][]
+
+## Task info o ukolu [/tasks/{id}{?withAssets}] 
+
++ Parameters
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+    + withAssets = `true` (optional, boolean) ... zda expandovat vsechny assety ukolu. Pokud je true, bude parametru *assets* obshovat [expandovanou kolekci assetu](#task-assets-list)
+
 
 ### Info o ukolu [GET]
 
@@ -574,14 +601,59 @@ Umoznuje ziskat detailni informace o jednom ukolu
     
     [Task][]
 
-## Task Asset [/tasks/{taskId}/assets/{id}]
+## Task editace [/tasks/{id}]
 
-<a name="task-assets"></a>
-Jeden konkretni asset daneho ukolu a manipulace s nim.
+Jeden konkretni task a manipulace s nim. 
 
 + Parameters
-    + taskId (required, string) ... UUID tasku kteremu asset patri
-    + id (required, string) ... UUID zaznamu - assetu ktery ma byt ziskan/updatovan
+    + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+
+### Editovat ukol [PUT]
+
+Updatuje dany ukol, editovat lze vsechny parametry projektu, krom *generovanych serverem*
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "id": 6, 
+                "title": "Mesicni nakup"
+                "status": "SCHEDULED"
+                "assets": [{
+                    "id": 3 
+                    "type": "SCHEDULED_FOR"
+                    "lastModified": "2014-11-26T11:08:09Z"
+                    "created": "2014-11-26T11:08:09Z"
+                    "date": "2014-10-10T08:00:00Z"
+                }]
+                "isDone": false
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+            }
+
++ Response 200
+    
+    [Task][]
+
+### Smazat ukol [DELETE]
+
+Smaze dany ukol a vsechny asety daneho ukolu
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 204
+
+
+## Asset [/tasks/{taskId}/assets/]
+<a name="task-assets"></a> [Vice o assetech](assets)
 
 + Model (application/json)
 
@@ -595,10 +667,42 @@ Jeden konkretni asset daneho ukolu a manipulace s nim.
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
                 "title": "Kino"
-                "body": "Nekde jsem videl ze bude novy James Bond, kouknot kdy bude v kine"
+                "body": "Nekde jsem videl ze bude novy James Bond, kouknout kdy bude v kine"
+            }
+            
+### Vytvorit novy assetu k danemu tasku [POST]
+
+Vytvori novy asset k danemu tasku.
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "id": 1 
+                "type": "NOTE"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+                "title": "Kino"
+                "body": "Nekde jsem videl ze bude novy James Bond, kouknout kdy bude v kine"
             }
 
-### Info o konkretnim assetu [GET]
++ Response 201
+    
+    [Asset][]
+
+## Konkretni Asset [/tasks/{taskId}/assets/{id}]
+
+Jeden konkretni asset daneho ukolu a manipulace s nim.
+
++ Parameters
+    + taskId (required, string) ... UUID tasku kteremu asset patri
+    + id (required, string) ... UUID zaznamu - assetu ktery ma byt ziskan/updatovan
+
+### Info o assetu [GET]
 
 Umoznuje ziskat detailni informace o jednom assetu
 
@@ -609,12 +713,49 @@ Umoznuje ziskat detailni informace o jednom assetu
 
 + Response 200
     
-    [Task Asset][]
+    [Asset][]
 
-## Task assets list [/tasks/{taskId}/assets/{?since,search,limit,offset}]
+### Editovat asset [PUT]
+
+Updatuje dany asset, editovat lze vsechny parametry projektu, krom *generovanych serverem*
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "id": 1 
+                "type": "NOTE"
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+                "title": "Kino"
+                "body": "Nekde jsem videl ze bude novy James Bond, kouknout kdy bude v kine"
+            }
+
+
++ Response 200
+    
+    [Asset][]
+
+### Smazat asset [DELETE]
+
+Smaze dany asset
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 204
+
+## Asset list [/tasks/{taskId}/assets/{?since,search,limit,offset}]
 
 <a name="task-assets-list"></a>
-Kolekce assetu daneho tasku. [Vice o assetech](assets)
+Kolekce assetu daneho tasku. 
     
 + Model (application/json)
 
@@ -732,8 +873,28 @@ Kolekce assetu daneho tasku. [Vice o assetech](assets)
 
 + Response 200
     
-    [Task assets list][]
+    [Asset list][]
 
+### Aktualizace poradi assetu [PUT]
+
+Aktualizace poradi assetu nad danym taskem. 
+Assety mohou prijit jen jako pole UUDI assetu v danem poradi, nebo i plne assety.
+Pokud plne, pak se provede aktualizace assetu.
+
++ Request
+    + Headers
+    
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+    
+    + Body
+        
+            {
+                [1, 3, 5, 8]
+            }   
+
++ Response 200
+
+     [Asset list][]
 
 # Group Tagy
 
