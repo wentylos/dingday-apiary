@@ -56,7 +56,7 @@ Ukazky (vse jsou ekvivalentni)
  
 * __2014-04-25T23:41:14Z__ 
 * __2014-04-25T23:41:14+00:00__
-* __2014-04-25T23:41:14__ - TODO - bacha toto dle ISO neni ekvivalentni dvema predchozim -> je to lokalni cas bez urceni cas. zony.
+* __2014-04-25T23:41:14__ - bez urceni casove zony bude automaticky prevedeno na cas ZULU
 
 
 ### <a name="date"></a> Date - urceni data
@@ -88,7 +88,7 @@ Since slouzi k omezeni zasilanych dat mezi klientem a serverem. Kazdy klient si 
 
 Since je ve formatu timestamp, [vice o formatu timestamp](#timestamp).
 
-Pouziti since neni vylucne z zadnym dalsi parametrem zdroje (neni li uvedeno jinak). Lze tedy napr. kombinovat since i search.
+Pouziti since neni vylucne z zadnym dalsi parametrem zdroje (neni-li uvedeno jinak). Lze tedy napr. kombinovat since i search.
 
 ### <a name="colors"></a> Barvy
 
@@ -106,7 +106,7 @@ Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, editaci p
 
 ## User [/users]
 
-Zdroj pro praci s uzivatelem, bez znalosti ID uzivatele.
+Zdroj pro registraci uzivatelem.
 
 + Model (application/json)
 
@@ -116,30 +116,60 @@ Zdroj pro praci s uzivatelem, bez znalosti ID uzivatele.
     
             {
                 "id": 3 
-                "email": "info@example.com"
-                "name": "Vaclav"
-                "surname": "Jurecek"
+                "email": "dingday@example.com"
+                "name": "Jan"
+                "surname": "Novak"
+                "isActive": true
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
             }
             
 ### Vytvořit/registrovat noveho uzivatele [POST]
-
+<a name="user-registration"></a>
 Vytvori/registruje noveho uzivatele
+
++ Email je chapan jako login, z teto podstaty je email unikatni
++ Ucet uzivatele se musi nejdrive aktivovat, viz [aktivace uzivatle](#user-activation)
++ Vraci aktivacni token
+       
++ Request
+    + Headers
+    
+            Content-type: application/json
+
+    + Body
+    
+            { 
+                "email": "dingday@example.com"
+                "name": "Jan"
+                "surname": "Novak"
+            }
+
++ Response 201 (application/json)
+
+            {
+                "activationHash": "ad2hg4sf9w30fsd0f340sdf"
+            }
+    
+## User Aktivace [/users/activation]
+<a name="user-activation"></a>
+Zdroj pro aktivaci uzivatele. Vyzaduje aktivacni hash, viz [registrace uzivatele](#user-registration)
+
+### Aktivace uzivatelskeho uctu [PUT]
+
+Aktivuje ucet uzivatele, v pripade uspechu vrati info o uzivateli.
 
 + Request
     + Headers
     
             Content-type: application/json
-            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-
     + Body
     
             { 
-                "title": "Babicka a Deda" 
+                "activationHash": "ad2hg4sf9w30fsd0f340sdf"
             }
 
-+ Response 201 (application/json)
++ Response 200 (application/json)
 
     [User][]
     
@@ -147,9 +177,11 @@ Vytvori/registruje noveho uzivatele
 
 Zdroj pro prihlaseni uzivatele.
 
-### Prihlasini uzivatele [GET]
+### Prihlaseni uzivatele [GET]
 
-Prihlasi uzivatele a vrati info o uzivateli
+Prihlasi uzivatele a v pripade uspesneho prilaseni vrati info o uzivateli
+
++ Login a heslo pouze jako soucast HTTP requestu
 
 + Request
     + Headers
@@ -157,11 +189,11 @@ Prihlasi uzivatele a vrati info o uzivateli
             Content-type: application/json
             Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 
-+ Response 201 (application/json)
++ Response 200 (application/json)
 
     [User][]
 
-## User [/users/{id}]
+## User edit [/users/{id}]
 
 Jeden konkretni uzivatel, uzivatelsky ucet a manipulace s nim
 
@@ -209,6 +241,11 @@ Nastaveni pro konkretniho uzivatele
 ### Autorizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
 
+### Casova zona
+
++ Urceni casove zony viz [UTC](http://cs.wikipedia.org/wiki/Časové_pásmo)
++ Urceni locale viz [Locale](http://cs.wikipedia.org/wiki/Locale#POSIX_platformy)
+
 + Model (application/json)
 
     JSON reprezentace nastaveni jednoho uzivatele. 
@@ -217,8 +254,8 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
     
             {
                 "id": 3 
-                "locale": ""
-                "timezone": ""
+                "locale": "cs_CZ"
+                "timezone": "UTC+1"
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
             }
@@ -227,7 +264,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autoriz
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
 
     
-### Info o uzivateli [GET]
+### Info o nastaveni uzivatele [GET]
 
 Umoznuje ziskat detailni informace o nastaveni uzivateli
 
@@ -253,27 +290,30 @@ Updatuje nastaveni daneho uzivatele, editovat lze vsechny parametry nastaveni uz
     + Body
     
             {
-                "title": "Upravene jmeno uzivatele"
+                "locale": "cs_CZ"
+                "timezone": "UTC+1"
             }
 
 + Response 200
     
     [User config][]
 
-## User reset hesla [/users/passwordResetRequest]
+## User pozadavek na zmenu hesla [/users/passwordChangeRequest]
+<a name="user-password-change-request"></a>
+Zdroj pro pozadavek na zmenu hesla uzivatele.
 
-Zdroj pro reset hesla uzivatele.
+Nejdrive ziskam token na [zmenu hesla](#user-password-change-request). Pak klientska apliakce vyzve uzivatele k zadani noveho hesla. Nove heslo a token zaslu na zdroj pro [zmenu hesla](#user-change-password).
 
 ### Reset hesla [PUT]
 
-Resetuje heslo uzivateli, jehoz email byl zaslan v body requestu.
+Vytvori pozadavek na reset hesla uzivatele. 
 
++ Generuje token, s platnosti 20 minut
 
 + Request
     + Headers
     
             Content-type: application/json
-            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 
     + Body
     
@@ -282,6 +322,36 @@ Resetuje heslo uzivateli, jehoz email byl zaslan v body requestu.
             }
 
 + Response 200 
+
+            {
+                "passwordChangeHash": "ad2hg4sf9w30fsd0f340sdf"
+            }
+            
+## User zmena hesla [/users/changePassword]
+<a name="user-change-password"></a>
+Zdroj pro na zmenu hesla uzivatele. 
+
+Nejdrive ziskam token na [zmenu hesla](#user-password-change-request). Pak klientska apliakce vyzve uzivatele k zadani noveho hesla. Nove heslo a token zaslu na zdroj pro [zmenu hesla](#user-change-password).
+
+### Zmena hesla [PUT]
+
+Zmeni heslo uzivateli 
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+
+    + Body
+    
+            { 
+                "passwordChangeHash": "ad2hg4sf9w30fsd0f340sdf"
+                "newPassword": "heslo"
+            }
+
++ Response 200 
+
+    [User][]
 
 # Group Assety
 
