@@ -7,16 +7,25 @@ Api urcene pro pristup ke sluzbam aplikace [dinday.cc](http://www.dingday.cc)
 
 ## Intro
 
-Vetsina requestu na zdroje vyzaduje Basic HTTP Authentication, kazdy takovy je oznacen hlavickou "Authentication".
+Vetsina requestu vyzaduje Autentizace uzivatele. Pouzivame Basic HTTP Authentication, kazdy takovy zdroj je oznacen hlavickou "Authentication".
 
-### <a name="autorizace"></a> Autorizace
+### <a name="auterizace"></a> Autentizace
 
-U kazdeho requestu, ktery vyzaduje autorizaci pouzivejte [Base64](http://en.wikipedia.org/wiki/Base64) zakodovany string ve forme _"username:password"_. 
-Neni tedy nutne se nijak hlasit, nepracujeme s autorizacnimi tokeny. Kazdy request se autorizuje zvlast.
+U kazdeho requestu, ktery vyzaduje autentitazci pouzivejte [Base64](http://en.wikipedia.org/wiki/Base64) zakodovany string ve forme _"username:XXX"_. 
+
+Kde _XXX_ je jedno z:
+
++ skutecne heslo uzivatele - vyuziji klienti, na kterych lze heslo bezpecne ulozit v otevrene podobe - mobilni klienti.
++ autentizacni token - vyuziji klienti, na kterych nelze heslo bezpecne ulozit v otevrene podobe - web klient.
+
+Autentizacni token ziskas pristupem na [/users/login](#user-login). Tento zdroj sam o sobe vyzaduje autentizaci. 
+Zde je tedy nutne pouzit vzdy heslo. 
+Zdroj vrati token, ktery se pak pouziva (viz vyse) k pristupu ke vsem dalsim zdrojum vyzadujicim autentizaci. 
+Platnost tokenu se pri kazdem requestu prodluzuje. Vychozi platnost je 6 hodin.
 
 #### Testovani
 
-Pro ucely testovani a tohoto MOCu pouzivejte jako Autorization string 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='. S kazdym requestem je tedy treba zaslat hlavicku
+Pro ucely testovani api a tohoto MOCu pouzivejte jako Autorization string 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='. S kazdym oznacenym requestem je tedy treba zaslat hlavicku
 
     Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 
@@ -104,26 +113,10 @@ V mistech kde se vyskutuje parametr *color* je dostupna pouze stringova konstant
 Zdroje pro zpristupneni informaci o uzivateli, prihlaseni, registraci, aktivaci, editaci profilu, reset hesla a nastaveni.
 
 
-## User [/users]
+## User Registrace [/users]
 
 Zdroj pro registraci uzivatele.
 
-+ Model (application/json)
-
-    JSON reprezentace jednoho Uzivatele. 
-
-    + Body
-    
-            {
-                "id": 3 
-                "email": "dingday@example.com"
-                "name": "Jan"
-                "surname": "Novak"
-                "isActive": true
-                "lastModified": "2014-11-26T11:08:09Z"
-                "created": "2014-11-26T11:08:09Z"
-            }
-            
 ### Registrovat uzivatele [POST]
 <a name="user-registration"></a>
 Registrace noveho uzivatele
@@ -157,7 +150,7 @@ Zdroj pro aktivaci uzivatele. Vyzaduje aktivacni hash, viz [registrace uzivatele
 
 ### Aktivovat uzivatele [PUT]
 
-Aktivuje ucet uzivatele, v pripade uspechu vrati info o uzivateli.
+Aktivuje ucet uzivatele.
 
 + Request
     + Headers
@@ -169,17 +162,15 @@ Aktivuje ucet uzivatele, v pripade uspechu vrati info o uzivateli.
                 "activationHash": "ad2hg4sf9w30fsd0f340sdf"
             }
 
-+ Response 200 (application/json)
++ Response 200
 
-    [User][]
-    
 ## User login [/users/login]
-
+<a name="user-login"></a>
 Zdroj pro prihlaseni uzivatele.
 
 ### Prihlasit uzivatele [GET]
 
-Prihlasi uzivatele a v pripade uspesneho prilaseni vrati info o uzivateli
+Prihlasi uzivatele a v pripade uspesneho prilaseni vrati token pro dalsi komunikaci, viz [Autentizace](#autentizace)
 
 + Login a heslo pouze jako soucast HTTP requestu
 
@@ -191,17 +182,50 @@ Prihlasi uzivatele a v pripade uspesneho prilaseni vrati info o uzivateli
 
 + Response 200 (application/json)
 
-    [User][]
+        {
+            "authToken": "p4jk432k8347dfhag57adsfhl4dsa"
+        }
 
-## User edit [/users/{id}]
+## User [/users/{id}]
 
 Jeden konkretni uzivatel, uzivatelsky ucet a manipulace s nim
 
-### Autorizace
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+### Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
 + Parameters
     + id (required, string) ... UUID zaznamu ktery ma byt ziskan/updatovan
+    
++ Model (application/json)
+
+    JSON reprezentace jednoho Uzivatele. 
+
+    + Body
+    
+            {
+                "id": 3 
+                "email": "dingday@example.com"
+                "name": "Jan"
+                "surname": "Novak"
+                "isActive": true
+                "lastModified": "2014-11-26T11:08:09Z"
+                "created": "2014-11-26T11:08:09Z"
+            }
+
+### Editovat uzivatele [GET]
+
+Informace o danem uzivateli
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
++ Response 200
+    
+    [User][]
+
     
 ### Editovat uzivatele [PUT]
 
@@ -238,10 +262,8 @@ Smaze daneho uzivatele a vsechny jeho data.
 
 Nastaveni pro konkretniho uzivatele
 
-### Autorizace
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
-
-### Casova zona
+### Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
 + Urceni casove zony viz [UTC](http://cs.wikipedia.org/wiki/Časové_pásmo)
 + Urceni locale viz [Locale](http://cs.wikipedia.org/wiki/Locale#POSIX_platformy)
@@ -351,8 +373,6 @@ Zmeni heslo uzivateli
 
 + Response 200 
 
-    [User][]
-
 # Group Assety
 
 <a name="assets"></a>
@@ -360,9 +380,8 @@ Asset je blok dat různého typy přičleněný buď k úkolu nebo projektu.
 
 Zdroje pro zpristupneni assetu prihlaseneho uzivatele.
 
-## Autorizace
-
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace).
+## Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
 ## Zavislost na tasku/projektu
 
@@ -470,9 +489,8 @@ Projekt, ke kterému úkol náleží. [Vice o projektech](#projects).
 
 Zdroj pro zpristupneni ukolu prihlaseneho uzivatele. 
 
-## Autorizace
-
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace).
+## Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
 ## <a name="task-status"></a> Stav ukolu
 
@@ -699,8 +717,8 @@ Tag je listecek, popisek prirazeny k tasku pres asset typu *AssetTag*
 
 Zdroje pro zpristupneni tagu prihlaseneho uzivatele. 
 
-## Autorizace
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+## Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
 ## Parametry entity tag:
 
@@ -858,8 +876,8 @@ Pridani ukolu do kalendare zpusobuje pridani jednoho z assetu vyse, k danemu uko
 
 __Akce POST neni podporovana. PUT slouzi pouze k update poradi.__
 
-## Autorizace
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+## Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
 ## Parametry entity term:
 
@@ -1023,8 +1041,8 @@ Podporovane kategorie:
 + SUSPENDED
 + COMPLETED
 
-## Autorizace
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+## Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
 ## Parametry entity category:
 
@@ -1120,8 +1138,8 @@ Projekt umoznuje seskupovat tasky do logickych skupin.
 
 Zdroje pro zpristupneni projektu prihlaseneho uzivatele. 
 
-## Autorizace
-Basic HTTP Authentication. Pro vice informaci viz kapitola [Autorizace](#autorizace)
+## Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
 ## Parametry entity project:
 
