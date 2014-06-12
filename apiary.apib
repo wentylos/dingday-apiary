@@ -1061,16 +1061,11 @@ Pro kazdou hodnotu z vyctoveho typu nize, existuje vlastni zdroj pro zpristupnen
 
 Existujici filtry:
 
-+ INBOX
-    + status = *NEW* OR (status = *SCHEDULED* AND scheduled_date < now() AND isDone = false) 
-+ NEXT
-    + status = *ANYTIME*
-+ WAITING_FOR
-    + status = *WAITING*
-+ SUSPENDED
-    + status = *SUSPENDED*
-+ COMPLETED
-    + status = *COMPLETED* OR isDone = true
++ INBOX - status = *NEW* OR (status = *SCHEDULED* AND scheduled_date < now() AND isDone = false) 
++ NEXT - status = *ANYTIME*
++ WAITING_FOR - status = *WAITING*
++ SUSPENDED - status = *SUSPENDED*
++ COMPLETED - status = *COMPLETED* OR isDone = true
 
 Pro poradek, existuje jeste filter *DAY* - ukol ma asset scheduled for s danym dnem, ktery explicitne aplikuje na sve vyhledavani zdroj [/terms](#terms). Podle tohoto filtru filtrova nelze jinak, nez pres zdroj /terms ktery navic pracuje s casovym rozmezim.
 
