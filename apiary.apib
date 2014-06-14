@@ -1273,10 +1273,9 @@ Zdroj urceny pro pristup k entite filter, ktera nese kolekci ukolu, odpovidajici
        + Body
 
             {
-                "filter": "INBOX"
+                "tasks": [1, 2, 3, 4, 5]
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
-                "tasks": [1, 2, 3, 4, 5]
             } 
             
             
@@ -1317,7 +1316,6 @@ Strategie mergovani: __posledni vyhrava__.
     + Body
     
             {
-                "filter": "INBOX""
                 "tasks": [1, 2, 3, 4, 5]
             }
 
@@ -1499,7 +1497,7 @@ Strategie mergovani: _posledni vyhrava_.
 
 # Group Synchro
 <a name="sync"></a>
-Davkova synchronizace klientu s vlastnim ulozistem (lokalni DB) vuci serveru.
+Davkova synchronizace klientu s vlastnim ulozistem (lokalni DB) vuci serveru pro prihlaseneho uzivatele.
 
 Soucasti kazdeho requestu mezi klientem a serverem je _verze_. 
 Klient si udrzuje cislo verze naposledy vracene serverem. 
@@ -1508,8 +1506,6 @@ Pokud klient nema cislo verze, posle jako cislo verze _0_.
 
 V realu jde o timestamp, ktery rika kdy naposledy klient requestoval data ze serveru. 
 
-Zdroje pro zpristupneni projektu prihlaseneho uzivatele. 
-
 ## Autentizace
 Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
 
@@ -1517,7 +1513,11 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autent
 
 ### UPDATE dat [PUT]
 
-Hromadna aktualizace dat. Update ma tyto parametry
+Hromadna aktualizace dat. 
+Poradi v jakem jsou data zaslana na server nehraje roli, server requesty seradi, viz [#sync-order](poradi entit synchronizace)
+
+## Tasky a assety
+U synchronizace plati, ze tasky jsou vzdy 'plne', tj. obsahuji vzdy vsechny assety daneho tasku.
 
 ## Parametry entity sync pro PUT:
 
@@ -1606,8 +1606,23 @@ Hromadna aktualizace dat. Update ma tyto parametry
 
 Ziska vsechna data ze serveru, zmenena od posledni aktualizace na zaklade _version_.
 
-Data v odpovedi jsou _seskupene_ podle zdroje/typu. 
+Data v odpovedi jsou _seskupene_ podle zdroje (tedy typu). 
 Napr. pokud od posledni zmeny doslo k vytvoreni nebo editaci 10 ukolu, bude v response jedna entita pro URI (/tasks) a v jejim _body_ bude pole vsech 10 ukolu.
+
+## Poradi zdroju
+<a name="#sync-order"></a>
+Zdroje museji byt zpracovavany serverm v urcitem poradi. 
+Jinak by napr. nebylo mozne ulozit poradi ukolu pro filter INBOX, dokud neexistuje nektery z ukolu.
+
+Poradi:
+
++ uzivatel
++ projekty
++ tagy
++ ukoly s assety
++ terminy
++ filtry
+
 
 ## Parametry entity sync pro GET:
 
@@ -1668,7 +1683,7 @@ Napr. pokud od posledni zmeny doslo k vytvoreni nebo editaci 10 ukolu, bude v re
                         ]
                     },
                     {
-                        "uri": "/filters"
+                        "uri": "/filters/INBOX"
                         "deleted": null
                         "body": [
                             {
@@ -1676,13 +1691,19 @@ Napr. pokud od posledni zmeny doslo k vytvoreni nebo editaci 10 ukolu, bude v re
                                 "lastModified": "2014-11-26T11:08:09Z"
                                 "created": "2014-11-26T11:08:09Z"
                                 "tasks": [1, 2, 3, 4, 5]
-                            },
+                            }
+                        ]
+                    },
+                    {
+                        "uri": "/filters/NEXT"
+                        "deleted": null
+                        "body": [
                             {
                                 "filter": "NEXT"
                                 "lastModified": "2014-11-26T11:08:09Z"
                                 "created": "2014-11-26T11:08:09Z"
                                 "tasks": [6, 7, 8]
-                            },
+                            }
                         ]
                     }
                 ]
