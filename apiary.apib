@@ -164,6 +164,7 @@ Registrace noveho uzivatele
                 "email": "dingday@example.com"
                 "name": "Jan"
                 "surname": "Novak"
+                "password": "heslo"
             }
 
 + Response 201 (application/json)
@@ -191,6 +192,8 @@ Aktivuje ucet uzivatele.
             }
 
 + Response 200
+    
+    [User][]
 
 ## User login [/users/login]
 <a name="user-login"></a>
@@ -281,7 +284,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autent
 
 + id (int) : unikátní UUID zaznamu - [vice o UUID](#uuid)
 + locale (string) : urceni casove zony viz [UTC](http://cs.wikipedia.org/wiki/Časové_pásmo)
-+ timezon (string) : urceni locale viz [Locale](http://cs.wikipedia.org/wiki/Locale#POSIX_platformy)
++ timezone (string) : urceni locale viz [Locale](http://cs.wikipedia.org/wiki/Locale#POSIX_platformy)
 + lastModified (timestamp) : cas posledni modifikace [vice o formatu timestamp](#timestamp) 
 + created (timestamp) : cas vytvoreni [vice o formatu timestamp](#timestamp)
 
@@ -1270,7 +1273,7 @@ Zdroj urceny pro pristup k entite filter, ktera nese kolekci ukolu, odpovidajici
        + Body
 
             {
-                "title": "INBOX"
+                "filter": "INBOX"
                 "lastModified": "2014-11-26T11:08:09Z"
                 "created": "2014-11-26T11:08:09Z"
                 "tasks": [1, 2, 3, 4, 5]
@@ -1494,5 +1497,193 @@ Strategie mergovani: _posledni vyhrava_.
 
      [Projects list][]
 
+# Group Synchro
+<a name="sync"></a>
+Davkova synchronizace klientu s vlastnim ulozistem (lokalni DB) vuci serveru.
 
+Soucasti kazdeho requestu mezi klientem a serverem je _verze_. 
+Klient si udrzuje cislo verze naposledy vracene serverem. 
+Klient sam nijak cislo verze nezvysuje.
+Pokud klient nema cislo verze, posle jako cislo verze _0_.
+
+V realu jde o timestamp, ktery rika kdy naposledy klient requestoval data ze serveru. 
+
+Zdroje pro zpristupneni projektu prihlaseneho uzivatele. 
+
+## Autentizace
+Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autentizace)
+
+## Synchro [/sync]
+
+### UPDATE dat [PUT]
+
+Hromadna aktualizace dat. Update ma tyto parametry
+
+## Parametry entity sync pro PUT:
+
++ version (unix timestamp) : unix timestamp posledni datum aktulaizace klienta
++ payload (Array) : pole requestu
+        + method (string): metoda, jedno z (POST, PUT, DELETE)
+        + status (string): HTTP hlavicka, soucast odpovedi pri davkovem aktualizaci - *Jen u odpovedi*
+        + uri (string): url na kterou by byl request zaslan, kdyby neslo o hromadne synchro
+        + body (applicaton/json): telo requstu tak, jako by jej klient zaslal, kdyby neslo o hromadne synchro
     
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "version": 1402725054 
+                "payload": [
+                    {
+                        "method": "POST"
+                        "uri": "/tasks"
+                        "body": {
+                            "id": 6
+                            "title": "Mesicni nakup"
+                            "status": "NEW"
+                            "assets": null
+                            "isDone": false
+                            "lastModified": "2014-11-26T11:08:09Z"
+                            "created": "2014-11-26T11:08:09Z"
+                        }
+                    }, 
+                    {
+                        "method": "PUT"
+                        "uri": "/filters/INBOX"
+                        "body": {
+                            tasks": [1, 2, 3, 4, 5]
+                        }
+                    }, 
+                    {
+                        "method": "DELETE"
+                        "uri": "/tasks/456/assets/456"
+                        "body": null
+                    }, 
+                ]
+            }
+
+
++ Response 200 (application/json)
+
+            {
+                "version": 1402729999 
+                "payload": [
+                    {
+                        "method": "POST"
+                        "status": 201 (Created)
+                        "uri": "/tasks"
+                        "body": {
+                            "id": 6
+                            "title": "Mesicni nakup"
+                            "status": "NEW"
+                            "assets": null
+                            "isDone": false
+                            "lastModified": "2014-11-26T11:08:09Z"
+                            "created": "2014-11-26T11:08:09Z"
+                        }
+                    }, 
+                    {
+                        "method": "PUT"
+                        "status": 200 (OK)
+                        "uri": "/filters/INBOX"
+                        "body": null
+                    }, 
+                    {
+                        "method": "DELETE"
+                        "status": 204 (No Content)
+                        "uri": "/tasks/456/assets/456"
+                        "body": null
+                    }, 
+                ]
+            }
+
+### Editovat projekt [GET]
+
+Ziska vsechna data ze serveru, zmenena od posledni aktualizace na zaklade _version_.
+
+Data v odpovedi jsou _seskupene_ podle zdroje/typu. 
+Napr. pokud od posledni zmeny doslo k vytvoreni nebo editaci 10 ukolu, bude v response jedna entita pro URI (/tasks) a v jejim _body_ bude pole vsech 10 ukolu.
+
+## Parametry entity sync pro GET:
+
++ version (unix timestamp) : unix timestamp posledni datum aktulaizace klienta
++ payload (Array) : pole requestu
+        + uri (string): vpodstate typ, url ze ktere by data prisla, kdyby neslo o hromadne synchro
+        + deleted (Array): pole UUID smazany entit daneho typu
+        + body (Array): pole entit daneho typu
+
++ Request
+    + Headers
+    
+            Content-type: application/json
+            Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+    + Body
+    
+            {
+                "version": 1402725054 
+                "payload": null
+            }
+
++ Response 200
+    
+            {
+                "version": 1402729999 
+                "payload": [
+                    {
+                        "uri": "/tasks"
+                        "deleted": [3, 24]
+                        "body": [
+                            {
+                                "id": 6
+                                "title": "Mesicni nakup"
+                                "status": "NEW"
+                                "assets": null
+                                "isDone": false
+                                "lastModified": "2014-11-26T11:08:09Z"
+                                "created": "2014-11-26T11:08:09Z"
+                            },
+                            {
+                                "id": 7
+                                "title": "Zubar"
+                                "status": "SCHEDULED"
+                                "assets": null
+                                "isDone": false
+                                "lastModified": "2014-11-26T11:08:09Z"
+                                "created": "2014-11-26T11:08:09Z"
+                            },
+                            {
+                                "id": 8
+                                "status": "SCHEDULED"
+                                "assets": null
+                                "isDone": false
+                                "lastModified": "2014-11-26T11:08:09Z"
+                                "created": "2014-11-26T11:08:09Z"
+                            }
+                        ]
+                    },
+                    {
+                        "uri": "/filters"
+                        "deleted": null
+                        "body": [
+                            {
+                                "filter": "INBOX"
+                                "lastModified": "2014-11-26T11:08:09Z"
+                                "created": "2014-11-26T11:08:09Z"
+                                "tasks": [1, 2, 3, 4, 5]
+                            },
+                            {
+                                "filter": "NEXT"
+                                "lastModified": "2014-11-26T11:08:09Z"
+                                "created": "2014-11-26T11:08:09Z"
+                                "tasks": [6, 7, 8]
+                            },
+                        ]
+                    }
+                ]
+            }
