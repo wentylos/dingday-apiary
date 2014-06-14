@@ -1514,7 +1514,7 @@ Basic HTTP Authentication. Pro vice informaci viz kapitola [Autentizace](#autent
 ### UPDATE dat [PUT]
 
 Hromadna aktualizace dat. 
-Poradi v jakem jsou data zaslana na server nehraje roli, server requesty seradi, viz [#sync-order](poradi entit synchronizace)
+Poradi v jakem jsou data zaslana na server nehraje roli, server requesty seradi, viz [poradi entit synchronizace](#sync-order)
 
 ## Tasky a assety
 U synchronizace plati, ze tasky jsou vzdy 'plne', tj. obsahuji vzdy vsechny assety daneho tasku.
@@ -1610,7 +1610,7 @@ Data v odpovedi jsou _seskupene_ podle zdroje (tedy typu).
 Napr. pokud od posledni zmeny doslo k vytvoreni nebo editaci 10 ukolu, bude v response jedna entita pro URI (/tasks) a v jejim _body_ bude pole vsech 10 ukolu.
 
 ## Poradi zdroju
-<a name="#sync-order"></a>
+<a name="sync-order"></a>
 Zdroje museji byt zpracovavany serverm v urcitem poradi. 
 Jinak by napr. nebylo mozne ulozit poradi ukolu pro filter INBOX, dokud neexistuje nektery z ukolu.
 
